@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Poseidon</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/css/app.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Poseidon.styles.css" asp-append-version="true" />
+
+    <environment include="Development">
+        <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.24/dist/full.min.css" rel="stylesheet" type="text/css" />
+        <script src="https://cdn.tailwindcss.com"></script>
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
+    </environment>
+
+</head>
+<body>
+
+    <div class="flex h-screen bg-gray-50 text-neutral-950">
+        <main class="flex-1">         
+
+            @RenderBody()
+
+          
+        </main>
+
+
+    </div>
+
+    <script>
+
+      
+
+    </script>
+
+</body>
+</html>

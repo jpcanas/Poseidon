@@ -1,0 +1,115 @@
+﻿
+<h2 class="text-2xl font-bold my-5">Component Sections</h2>
+<div class="grid grid-cols-4 gap-4">
+    <div>
+        <p class="text-lg">Inputs</p>
+        <button class="btn btn-primary">Primary Button</button>
+        <button class="btn btn-outline btn-primary">Primary</button>
+        <button class="btn btn-disabled" tabindex="-1" role="button" aria-disabled="true">
+            Disabled using class name
+        </button>
+        <button class="btn">
+            <span class="loading loading-spinner"></span>
+            loading
+        </button>
+        <input type="checkbox" class="toggle" checked="checked" />
+        <div class="divider"></div>
+
+        <div class="join join-vertical w-full">
+            <div class="collapse collapse-arrow join-item border-base-300 border">
+                <input type="radio" name="my-accordion-4" checked="checked" />
+                <div class="collapse-title text-lg font-medium">Click to open this one and close others</div>
+                <div class="collapse-content">
+                    <p>hello</p>
+                </div>
+            </div>
+            <div class="collapse collapse-arrow join-item border-base-300 border">
+                <input type="radio" name="my-accordion-4" />
+                <div class="collapse-title text-lg font-medium">Click to open this one and close others</div>
+                <div class="collapse-content">
+                    <p>hello</p>
+                </div>
+            </div>
+            <div class="collapse collapse-arrow join-item border-base-300 border">
+                <input type="radio" name="my-accordion-4" />
+                <div class="collapse-title text-lg font-medium">Click to open this one and close others</div>
+                <div class="collapse-content">
+                    <p>hello</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div>
+        <p class="text-lg">Buttons</p>
+        <div class="p-6 space-y-4">
+            <button class="btn btn-lg">Primary Button</button>
+            <button class="btn btn-secondary">Secondary Button</button>
+            <input type="text" placeholder="Type here" class="input input-bordered w-full max-w-xs" />
+
+            <div class="alert alert-info">
+                <span>DaisyUI is working!</span>
+            </div>
+
+            <div class="form-control">
+                <label class="cursor-pointer label">
+                    <span class="label-text">Remember me</span>
+                    <input type="checkbox" checked="checked" class="checkbox checkbox-secondary" />
+                </label>
+            </div>
+            <div class="flex w-52 flex-col gap-4">
+                <div class="skeleton h-32 w-full"></div>
+                <div class="skeleton h-4 w-28"></div>
+                <div class="skeleton h-4 w-full"></div>
+                <div class="skeleton h-4 w-full"></div>
+            </div>
+
+        </div>
+    </div>
+    <div>
+        <p class="text-lg">Sliders</p>
+        <input type="range" min="0" max="100" value="40" class="range" />
+        <ul class="steps">
+            <li class="step step-primary">Register</li>
+            <li class="step step-primary">Choose plan</li>
+            <li class="step">Purchase</li>
+            <li class="step">Receive Product</li>
+        </ul>
+        <div class="avatar online">
+            <div class="w-24 rounded-full">
+                <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+            </div>
+        </div>
+        <div class="avatar offline">
+            <div class="w-24 rounded-full">
+                <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+            </div>
+        </div>
+    </div>
+    <div>
+        <p class="text-lg">Cards</p>
+        <div class="card bg-base-100 w-96 shadow-xl">
+            <figure>
+                <img src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
+                     alt="Shoes" />
+            </figure>
+            <div class="card-body">
+                <h2 class="card-title">Shoes!</h2>
+                <p>If a dog chews shoes whose shoes does he choose?</p>
+                <div class="card-actions justify-end">
+                    <button class="btn btn-primary">Buy Now</button>
+                </div>
+            </div>
+        </div>
+        <div class="dropdown">
+            <div tabindex="0" role="button" class="btn m-1">Click to reveal card</div>
+            <div tabindex="0"
+                 class="dropdown-content card card-compact bg-primary text-primary-content z-[1] w-64 p-2 shadow">
+                <div class="card-body">
+                    <h3 class="card-title">Card title!</h3>
+                    <p>you can use any element as a dropdown.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

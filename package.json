@@ -1,0 +1,24 @@
+{
+  "name": "poseidon",
+  "version": "1.0.0",
+  "description": "Poseidon is an ASP.NET 9 Core MVC project template and uses tailwind for styling",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "css:build": "npx tailwindcss -i ./wwwroot/css/site.css -o ./wwwroot/css/styles.css --minify",
+    "copy:alpinejs": "xcopy /Y /I \"node_modules\\alpinejs\\dist\\cdn.min.js\" \"wwwroot\\js\\alphinejs\\\"",
+    "copy:daisyui": "xcopy /Y /I \"node_modules\\daisyui\\daisyui.css\" \"wwwroot\\css\\daisyui\\\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "daisyui": "^4.12.24",
+    "tailwindcss": "^3.4.17"
+  },
+  "dependencies": {
+    "alpinejs": "^3.15.1",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6"
+  }
+}

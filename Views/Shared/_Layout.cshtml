@@ -1,0 +1,93 @@
+﻿<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Poseidon</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/css/app.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Poseidon.styles.css" asp-append-version="true" />
+
+    @*<link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />*@
+
+    <environment include="Development">
+        <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.24/dist/full.min.css" rel="stylesheet" type="text/css" />
+        <script src="https://cdn.tailwindcss.com"></script>
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
+    </environment>
+
+</head>
+<body>
+
+    <div class="flex h-screen bg-white text-neutral">
+        @await Html.PartialAsync("Navigation/_Sidebar")
+
+        <div id="overlay"
+             class="fixed inset-0 bg-black/40 z-20 hidden">
+        </div>
+
+        <main class="flex-1 overflow-y-auto">
+
+            @await Html.PartialAsync("Navigation/_Topbar")
+
+            <div class="px-6">
+                @RenderBody()
+            </div>
+
+
+            <footer>
+                <div>
+                    &copy; 2025 - Poseidon - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                </div>
+            </footer>
+
+            <div role="alert" class="alert sticky bottom-0 bg-orange-100 hidden" id="alertWarningSessionExp">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="h-6 w-6 shrink-0 stroke-current"
+                     fill="none"
+                     viewBox="0 0 24 24">
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <span id="txtWarningSessionExp"></span>
+            </div>
+
+            <dialog id="modalSessionExpired" class="modal modal-bottom sm:modal-middle">
+                <div class="modal-box">
+                    <h3 class="text-lg font-bold">Session Expired</h3>
+                    <p class="py-4">Your session has expired due to inactivity. Please log in again</p>
+                    <div class="modal-action">
+                        <form method="dialog">
+                            <button class="btn btn-primary" id="reloginBtn">Login</button>
+                        </form>
+                    </div>
+                </div>
+            </dialog>
+        </main>
+
+    </div>
+
+    @inject IOptions<Poseidon.Configurations.InactivitySetting> InactivityOptions
+
+    <input type="hidden" id="maxInactiveTime" value="@InactivityOptions.Value.MaxInactiveTimeSeconds" />
+    <input type="hidden" id="forcedLogoutTime" value="@InactivityOptions.Value.ForcedLogoutTimeSeconds" />
+
+    @*  ---- Packages --- *@
+    <script src="~/js/alphinejs/cdn.min.js" asp-append-version="true"></script>
+
+    @*  ---- Shared --- *@
+    <script src="~/Scripts/Shared/layout.js" asp-append-version="true"></script>
+    <script src="~/Scripts/Shared/sidebar.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

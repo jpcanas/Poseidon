@@ -1,0 +1,72 @@
+﻿@model Poseidon.Models.ViewModels.LoginViewModel
+
+<section class="px-8 bg-white">
+    <div class="container mx-auto h-screen grid place-items-center">
+        <div class="relative flex flex-col bg-clip-border rounded-xl bg-white text-neutral-950 md:px-20 md:py-14 py-8 border border-gray-300">
+            <div class="relative bg-clip-border mt-4 mx-4 rounded-xl overflow-hidden bg-white text-neutral-950 text-center">
+                <h1 class="font-sans text-5xl font-semibold text-blue-gray-900 mb-4 !text-3xl md:text-4xl">
+                    Welcome to Poseidon App
+                </h1>
+                <p class="block antialiased font-sans text-base font-light leading-relaxed text-inherit !text-gray-600 text-[18px] font-normal md:max-w-sm">
+                    Enjoy quick and secure access to your accounts on various Web3
+                    platforms.
+                </p>
+            </div>
+            <div class="p-6">
+                <form asp-action="Login" method="post" class="flex flex-col gap-4 md:mt-6">
+                    @Html.AntiForgeryToken()
+                    <div class="relative">
+                        <div class="mb-3">
+                            <p class="font-sans text-sm font-medium mb-2">
+                                Your Email
+                            </p>
+                            <input id="email" type="email" asp-for="Email" placeholder="name@mail.com" class="input input-bordered w-full bg-white" />
+                        </div>
+
+                        <div class="mb-7">
+                            <p class="font-sans text-sm font-medium mb-2">
+                                Password
+                            </p>
+                            <input id="password" type="password" asp-for="Password" placeholder="" class="input input-bordered w-full bg-white" />
+                        </div>
+
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            @foreach (var modelStateEntry in ViewData.ModelState.Values)
+                            {
+                                foreach (var error in modelStateEntry.Errors)
+                                {
+                                    <label class="absolute bottom-0 right-1 font-normal text-sm truncate text-red-500">
+                                        @error.ErrorMessage
+                                    </label>
+                                }
+                            }
+                        }
+
+                    </div>
+                    <button class="btn btn-primary text-white uppercase font-bold" type="submit">Sign In</button>
+                    <button class="btn uppercase font-bold gap-5 bg-white text-neutral-950">
+                        <img src="https://www.material-tailwind.com/logos/logo-google.png"
+                             alt="google"
+                             class="h-6 w-6" />
+                        Sign in with Google
+                    </button>
+
+                    <div class="form-control">
+                        <label class="cursor-pointer label">
+                            <span class="label-text text-base">Keep me logged in</span>
+                            <input type="checkbox" class="checkbox checkbox-primary checkbox-sm" asp-for="RememberMe"/>
+                        </label>
+                    </div>
+
+                    <p class="block antialiased font-sans text-sm font-light leading-normal text-inherit text-center mx-auto max-w-[19rem] !font-medium !text-gray-600">
+                        Upon signing in, you consent to abide by our<!-- -->
+                        <a href="#" class="text-gray-900">Terms of Service</a>
+                        <!-- -->&amp;<!-- -->
+                        <a href="#" class="text-gray-900">Privacy Policy.</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>

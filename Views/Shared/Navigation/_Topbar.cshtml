@@ -1,0 +1,98 @@
+﻿<nav class="bg-white border-b border-gray-200 px-6 py-3 sticky top-0 z-10">
+    <div class="flex items-center justify-between">
+        <div class="flex items-center flex-1 max-w-md gap-3">
+            <button type="button" class="cursor-pointer md:hidden p-2 bg-gray-200 rounded-md" id="toggleSidebar">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                    <path fill-rule="evenodd" d="M3 6.75A.75.75 0 0 1 3.75 6h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 6.75ZM3 12a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 12Zm0 5.25a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
+                </svg>
+            </button>
+            <div class="relative w-full">
+                <label class="input input-bordered flex items-center gap-2 h-10">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         viewBox="0 0 16 16"
+                         fill="currentColor"
+                         class="h-4 w-4 opacity-70">
+                        <path fill-rule="evenodd"
+                              d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+                              clip-rule="evenodd" />
+                    </svg>
+                    <input type="text" class="grow" placeholder="Search" />
+                </label>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4 ml-6 mr-3">
+            <button type="button" class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition relative">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+                </svg>
+                <div class="badge badge-error badge-sm text-white absolute top-0 -right-2">34</div>
+            </button>
+
+            <div class="dropdown dropdown-end">
+                <div tabindex="0" role="button">
+                    <button type="button" class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-400 transition">
+                        <div class="avatar placeholder">
+                            <div class="w-10 rounded-full focus:ring ring-primary">
+                                <img src="~/images/team-1.jpg" />
+                            </div>
+                        </div>
+                        @*<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                    </svg>*@
+                    </button>
+                </div>
+                <div tabindex="0" class="dropdown-content w-72 bg-base-100 rounded-box shadow pb-2">
+                    <div class="flex px-3 pt-4">
+                        <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-400 transition">
+                            <img class="rounded-full" src="~/images/team-1.jpg" />
+
+                        </div>
+                        <div class="flex-col ms-3">
+                            <p class="font-bold">Zabrina Carpenters</p>
+                            <p class="text-sm text-gray-400">School Head</p>
+                        </div>
+                    </div>
+                    <div class="border-b border-gray-200 mt-2 mb-0"></div>
+                    <ul class="menu z-[1]">
+                        <li>
+                            <a href="#" class="flex items-center gap-5 py-2 hover:bg-gray-200 rounded-lg px-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                                </svg>
+                                <span class="sidebar-text">View Profile</span>
+                            </a>
+                        </li>
+                        <li>
+                            <div class="flex items-center gap-5 py-2 hover:bg-gray-200 rounded-lg px-2 cursor-pointer" onclick="modal_logout.showModal()">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
+                                </svg>
+                                <span class="sidebar-text">Logout</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <dialog id="modal_logout" class="modal">
+                <div class="modal-box">
+                    <h3 class="text-lg font-bold">Log out?</h3>
+                    <p class="py-4">Are you sure you want to end your session?</p>
+                    <div class="modal-action">
+                        <form method="dialog">
+                            <!-- if there is a button in form, it will close the modal -->
+                            <div class="flex gap-4">
+                                <button class="btn">Cancel</button>
+                                <button class="btn btn-primary" id="btnLogout">Log out</button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </dialog>
+
+        </div>
+    </div>
+
+</nav>
