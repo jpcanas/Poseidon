@@ -1,4 +1,4 @@
-﻿@model Poseidon.Models.ViewModels.LoginViewModel
+﻿@model Poseidon.Models.ViewModels.Auth.LoginViewModel
 
 <section class="px-8 bg-white">
     <div class="container mx-auto h-screen grid place-items-center">
@@ -12,60 +12,85 @@
                     platforms.
                 </p>
             </div>
-            <div class="p-6">
-                <form asp-action="Login" method="post" class="flex flex-col gap-4 md:mt-6">
+            <div class="pt-6 px-2">
+                <form class="flex flex-col gap-4 md:mt-6" x-data="loginForm" x-on:submit.prevent="submitLogin">
                     @Html.AntiForgeryToken()
                     <div class="relative">
                         <div class="mb-3">
-                            <p class="font-sans text-sm font-medium mb-2">
-                                Your Email
-                            </p>
-                            <input id="email" type="email" asp-for="Email" placeholder="name@mail.com" class="input input-bordered w-full bg-white" />
+                            <p class="font-sans text-sm font-medium mb-2">Your Email</p>
+                            <input placeholder="name@mail.com" class="input input-bordered w-full bg-white" 
+                                   x-model="email"
+                                   :class="emailError == '' ? '' : 'input-error' "
+                                   x-on:blur="validateEmail"/>
+                            <div class="label justify-end pb-0">
+                                <p class="label-text-alt text-sm text-error" x-text="emailError"></p>
+                            </div>
                         </div>
 
-                        <div class="mb-7">
+                        <div class="mb-1">
                             <p class="font-sans text-sm font-medium mb-2">
                                 Password
                             </p>
-                            <input id="password" type="password" asp-for="Password" placeholder="" class="input input-bordered w-full bg-white" />
+                            <label class="input input-bordered w-full bg-white flex items-center justify-between"
+                                   x-data="{showPassword: false}"
+                                   :class="passwordError == '' ? '' : 'input-error' ">
+                                <input id="password" :type="showPassword ? 'text' : 'password'" placeholder=""
+                                       x-model="password" 
+                                       x-on:blur="validatePassword"/>
+                                <button type="button" class="text-neutral cursor-pointer" x-on:click="showPassword = !showPassword">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                         class="size-6" x-show="!showPassword">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                         class="size-6" x-show="showPassword">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+                                    </svg>
+                                </button>
+                            </label>
+                            <div class="label justify-end pb-0">
+                                <p class="label-text-alt text-sm text-error" x-text="passwordError"></p>
+                            </div>
+                            <div class="label justify-end pb-0">
+                                <p class="label-text-alt text-sm text-error" x-text="generalError"></p>
+                            </div>
+
                         </div>
 
-                        @if (!ViewData.ModelState.IsValid)
-                        {
-                            @foreach (var modelStateEntry in ViewData.ModelState.Values)
-                            {
-                                foreach (var error in modelStateEntry.Errors)
-                                {
-                                    <label class="absolute bottom-0 right-1 font-normal text-sm truncate text-red-500">
-                                        @error.ErrorMessage
-                                    </label>
-                                }
-                            }
-                        }
-
                     </div>
-                    <button class="btn btn-primary text-white uppercase font-bold" type="submit">Sign In</button>
-                    <button class="btn uppercase font-bold gap-5 bg-white text-neutral-950">
-                        <img src="https://www.material-tailwind.com/logos/logo-google.png"
-                             alt="google"
-                             class="h-6 w-6" />
-                        Sign in with Google
+                    <button class="btn btn-primary text-white uppercase font-bold" type="submit" :class="loading ? 'btn-disabled' : '' ">
+                        <span :class="loading ? 'loading loading-spinner' : '' "></span>
+                        <span x-text="loading ? 'loading' : 'Sign in' "></span>
                     </button>
+                    @*<button class="btn uppercase font-bold gap-5 bg-white text-neutral-950">
+                            <img src="https://www.material-tailwind.com/logos/logo-google.png"
+                                 alt="google"
+                                 class="h-6 w-6" />
+                            Sign in with Google
+                        </button>*@
 
-                    <div class="form-control">
-                        <label class="cursor-pointer label">
-                            <span class="label-text text-base">Keep me logged in</span>
-                            <input type="checkbox" class="checkbox checkbox-primary checkbox-sm" asp-for="RememberMe"/>
-                        </label>
+                    <div class="flex justify-between items-center">
+                        <div class="form-control">
+                            <label class="cursor-pointer label justify-start gap-3">
+                                <input type="checkbox" class="checkbox checkbox-primary checkbox-sm" x-model="rememberMe"/>
+                                <span class="label-text text-base">Keep me logged in</span>
+                            </label>
+                        </div>
+                        <a asp-controller="Auth" asp-action="ForgotPassword" class="link link-primary">I forgot my password</a>
                     </div>
 
-                    <p class="block antialiased font-sans text-sm font-light leading-normal text-inherit text-center mx-auto max-w-[19rem] !font-medium !text-gray-600">
+                </form>
+
+                <div class="mt-8">
+                    <p class="block text-base text-center mx-auto max-w-[24rem]">
                         Upon signing in, you consent to abide by our<!-- -->
                         <a href="#" class="text-gray-900">Terms of Service</a>
                         <!-- -->&amp;<!-- -->
                         <a href="#" class="text-gray-900">Privacy Policy.</a>
                     </p>
-                </form>
+                </div>
+
             </div>
         </div>
     </div>

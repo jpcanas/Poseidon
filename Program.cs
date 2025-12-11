@@ -8,6 +8,8 @@ using Poseidon.Data.Interfaces;
 using Poseidon.Data.Repositories;
 using Poseidon.Endpoints;
 using Poseidon.Services;
+using Poseidon.Services.Interfaces;
+using Resend;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,14 +21,27 @@ builder.Services.Configure<AuthSetting>(
 builder.Services.Configure<InactivitySetting>(
     builder.Configuration.GetSection("InactivitySetting"));
 
+//db connection
 builder.Services.AddDbContext<PoseidonDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("PoseidonDb"));
 });
 
+//other services
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IEmailService, ResendEmailService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
+//Email service api
+builder.Services.AddOptions();
+builder.Services.AddHttpClient<ResendClient>();
+builder.Services.Configure<ResendClientOptions>(o =>
+{
+    o.ApiToken = Environment.GetEnvironmentVariable("RESEND_APITOKEN")!;
+});
+builder.Services.AddTransient<IResend, ResendClient>();
+
+//Authentication
 builder.Services.AddAuthentication("PoseidonAuth")
     .AddCookie("PoseidonAuth", options =>
     {

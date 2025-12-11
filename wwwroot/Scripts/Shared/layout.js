@@ -1,4 +1,5 @@
-﻿document.addEventListener('DOMContentLoaded', () => {
+﻿
+document.addEventListener('DOMContentLoaded', () => {
     const expWarningAlert = document.getElementById('alertWarningSessionExp');
     const expWarningTxt = document.getElementById('txtWarningSessionExp');
     const logoutBtn = document.getElementById('btnLogout');
@@ -34,6 +35,19 @@
             expWarningAlert.classList.add('hidden');
         }, false)
     })
+
+
+    document.getElementById("btnTest").addEventListener("click", function () {
+        axios.get('/ping')
+            .then(function (res) {
+                console.log(res.data);
+                document.getElementById("result").innerText = res.data.message;
+            })
+            .catch(function (err) {
+                console.error(err);
+                document.getElementById("result").innerText = "Error!";
+            });
+    });
 });
 
 

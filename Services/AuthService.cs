@@ -5,8 +5,10 @@ using Poseidon.Configurations;
 using Poseidon.Data.Interfaces;
 using Poseidon.Data.Repositories;
 using Poseidon.Models.Entities;
-using Poseidon.Models.ViewModels;
+using Poseidon.Models.ViewModels.Auth;
+using Poseidon.Services.Interfaces;
 using System.Security.Claims;
+using System.Security.Cryptography;
 
 namespace Poseidon.Services
 {
@@ -50,11 +52,40 @@ namespace Poseidon.Services
         {
             User? user = await _userRepository.GetUser(loginCreds.Email);
 
+            if(user == null) return null;
+
             bool validPassword = BCrypt.Net.BCrypt.Verify(loginCreds.Password, user.Password);
             if (!validPassword)
                 return null;
 
             return user;
+        }
+
+        public async Task<User?> GetUserByEmail(string email)
+        {
+            return await _userRepository.GetUser(email);
+        }
+
+        public async Task<string?> GenerateResetToken(string email)
+        {
+            var user = await _userRepository.GetUser(email);
+
+            if (user == null)
+                return null;
+
+            var tokenBytes = RandomNumberGenerator.GetBytes(64);
+            var token = Convert.ToBase64String(tokenBytes);
+
+            var passwordResetEntry = new PasswordResetToken
+            {
+                UserId = user.UserId,
+                Token = token,
+                ExpiresAt = DateTime.UtcNow.AddMinutes(30)
+            };
+
+            await _userRepository.AddPasswordResetToken(passwordResetEntry);
+
+            return token;
         }
     }
 }

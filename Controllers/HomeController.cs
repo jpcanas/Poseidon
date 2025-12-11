@@ -25,6 +25,11 @@ namespace Poseidon.Controllers
         {
             return View();
         }
+        [HttpGet("/ping")]
+        public IActionResult PingTest()
+        {
+            return Json(new { message = "Axios is working!" });
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

@@ -25,21 +25,19 @@
 <body>
 
     <div class="flex h-screen bg-gray-50 text-neutral-950">
-        <main class="flex-1">         
+        <main class="flex-1">
 
             @RenderBody()
 
-          
         </main>
-
 
     </div>
 
-    <script>
+    @*  ---- Packages --- *@
+    <script src="~/js/alphinejs/cdn.min.js" asp-append-version="true" defer></script>
+    <script src="~/js/axios/axios.min.js" asp-append-version="true"></script>
 
-      
-
-    </script>
+    <script src="~/Scripts/Auth/login.js" asp-append-version="true"></script>
 
 </body>
 </html>

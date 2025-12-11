@@ -18,3 +18,9 @@ html {
 body {
     font-family: 'Nunito Sans', ui-sans-serif, system-ui, sans-serif;
 }
+
+/* Microsoft Edge & Chromium password reveal button */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+    display: none;
+}

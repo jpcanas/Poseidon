@@ -19,5 +19,11 @@ namespace Poseidon.Data.Repositories
 
             return user;
         }
+
+        public async Task AddPasswordResetToken(PasswordResetToken passToken)
+        {
+            _context.PasswordResetTokens.Add(passToken);
+            await _context.SaveChangesAsync();
+        }
     }
 }
