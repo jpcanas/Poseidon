@@ -106,6 +106,9 @@ document.addEventListener('alpine:init', () => {
 
                 document.getElementById('forgotPassMessage').innerHTML = this.successMsg;
 
+                //Temporary show reset token link for testing purposes
+                document.getElementById('resePasswordLink').href = result.resetLink;
+
             } else {
                 this.isValid = false;
                 this.errorMessage = result.msg
@@ -130,7 +133,8 @@ async function resetEmail(emailInput) {
 
         return {
             status: res.status,
-            msg: res.data
+            msg: res.data.msg,
+            resetLink: res.data.tempResetLink //temporary reset link for testing purposes
         }
 
     } catch (error) {
@@ -142,7 +146,8 @@ async function resetEmail(emailInput) {
 
         return {
             status: error.status,
-            msg: message
+            msg: message,
+            resetLink: null
         }
     }
 }

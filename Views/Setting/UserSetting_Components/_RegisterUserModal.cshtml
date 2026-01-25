@@ -1,0 +1,187 @@
+﻿@using Poseidon.Models.ViewModels;
+
+<dialog id="modalAddUser" class="modal">
+    @Html.AntiForgeryToken()
+    <div class="modal-box w-11/12 max-w-4xl p-8" x-data="userForm">
+        <div class="flex justify-between items-center">
+            <h3 class="text-2xl font-bold">Register User</h3>
+            <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-5 top-5">✕</button>
+            </form>
+        </div>
+
+        <div class="mt-5">
+            <p class="font-semibold text-lg text-primary my-2">Basic Information</p>
+            <div class="form-control">
+                <div class="grid md:grid-cols-2 gap-4 font-medium">
+                    <div class="w-full">
+                        <div class="label pt-0">
+                            <span class="label-text">Email Address <span class="text-error">*</span></span>
+                        </div>
+                        <input type="text" placeholder=""
+                               class="input input-bordered w-full"
+                               :class="emailError == '' ? '' : 'input-error' "
+                               x-model="email"
+                               x-on:blur="validateNewUser('email')" />
+                        <div class="label justify-end pb-0">
+                            <p class="label-text-alt text-sm text-error" x-text="emailError"></p>
+                        </div>
+                    </div>
+                    <div class="w-full">
+                        <div class="label pt-0">
+                            <span class="label-text">Username</span>
+                        </div>
+                        <input type="text" placeholder=""
+                               class="input input-bordered w-full"
+                               :class="userNameError == '' ? '' : 'input-error' "
+                               x-model="userName" />
+                        <div class="label justify-end pb-0">
+                            <p class="label-text-alt text-sm text-error" x-text="userNameError"></p>
+                        </div>
+                    </div>
+                    <div class="w-full">
+                        <div class="label pt-0">
+                            <span class="label-text">First Name <span class="text-error">*</span></span>
+                        </div>
+                        <input type="text" placeholder=""
+                               class="input input-bordered w-full"
+                               :class="firstNameError == '' ? '' : 'input-error' "
+                               x-model="firstName"
+                               x-on:blur="validateNewUser('firstName')" />
+                        <div class="label justify-end pb-0">
+                            <p class="label-text-alt text-sm text-error" x-text="firstNameError"></p>
+                        </div>
+                    </div>
+                    <div class="w-full">
+                        <div class="label pt-0">
+                            <span class="label-text">Last Name <span class="text-error">*</span></span>
+                        </div>
+                        <input type="text" placeholder=""
+                               class="input input-bordered w-full"
+                               :class="lastNameError == '' ? '' : 'input-error' "
+                               x-model="lastName"
+                               x-on:blur="validateNewUser('lastName')" />
+                        <div class="label justify-end pb-0">
+                            <p class="label-text-alt text-sm text-error" x-text="lastNameError"></p>
+                        </div>
+                    </div>
+                    <div class="w-full">
+                        <div class="label pt-0">
+                            <span class="label-text">Biological Sex <span class="text-error">*</span></span>
+                        </div>
+                        <select class="select select-bordered w-full"
+                                :class="selectSexError == '' ? '' : 'select-error' "
+                                x-model="selectSex"
+                                x-on:blur="validateNewUser('sex')">
+                            <option value="" disabled>-- Select</option>
+                            @if (ViewBag.BiologicalSexOptions != null)
+                            {
+                                foreach (var item in ViewBag.BiologicalSexOptions)
+                                {
+                                    <option value="@item.value">@item.text</option>
+                                }
+                            }
+                            else
+                            {
+                                <option value="" disabled>-- No available options</option>
+                            }
+                        </select>
+                        <div class="label justify-end pb-0">
+                            <p class="label-text-alt text-sm text-error" x-text="selectSexError"></p>
+                        </div>
+                    </div>
+                    <div class="w-full">
+                        <div class="label pt-0">
+                            <span class="label-text">Birthdate</span>
+                        </div>
+                        <input type="Date" placeholder="" class="input input-bordered w-full" x-model="birthDate"/>
+                        <div class="label justify-end pb-0">
+                            <p class="label-text-alt text-sm text-error"></p>
+                        </div>
+                    </div>
+                    <div class="w-full col-span-2">
+                        <div class="label pt-0">
+                            <span class="label-text">Address</span>
+                        </div>
+                        <input type="text" placeholder=""  class="input input-bordered w-full" x-model="address"/>
+                        <div class="label justify-end pb-0">
+                            <p class="label-text-alt text-sm text-error"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @{
+            var roles = ViewBag.Roles as List<RoleVM>;
+            var statusList = ViewBag.StatusList as List<UserStatusVM>;
+        }
+
+        <div class="mt-6">
+            <p class="font-semibold text-lg text-primary my-2">Access Control</p>
+            <div class="form-control">
+                <div class="grid md:grid-cols-2 gap-4 font-medium">
+                    <div class="w-full">
+                        <div class="label pt-0">
+                            <span class="label-text">Role <span class="text-error">*</span></span>
+                        </div>
+                        <select class="select select-bordered w-full"
+                                :class="selectRoleError == '' ? '' : 'select-error' "
+                                x-model="selectRole"
+                                x-on:blur="validateNewUser('role')">
+                            <option value="" disabled>-- Select a role</option>
+                            @if (roles?.Any() == true)
+                            {
+                                foreach (RoleVM role in roles)
+                                {
+                                    <option value="@role.RoleId">@role.RoleName</option>
+                                }
+                            }
+                            else
+                            {
+                                <option value="" disabled>-- No available options</option>
+                            }
+                        </select>
+                        <div class="label justify-end pb-0">
+                            <p class="label-text-alt text-sm text-error" x-text="selectRoleError"></p>
+                        </div>
+                    </div>
+                    <div class="w-full">
+                        <div class="label pt-0">
+                            <span class="label-text">Status <span class="text-error">*</span></span>
+                        </div>
+                        <select class="select select-bordered w-full"
+                                :class="selectStatusError == '' ? '' : 'select-error' "
+                                x-model="selectStatus"
+                                x-on:blur="validateNewUser('status')">
+                            <option value="" disabled>-- Select a status</option>
+                            @if (statusList?.Any() == true)
+                            {
+                                foreach (UserStatusVM status in statusList)
+                                {
+                                    <option value="@status.UserStatusId">@status.Name</option>
+                                }
+                            }
+                            else
+                            {
+                                <option value="" disabled>-- No available options</option>
+                            }
+                        </select>
+                        <div class="label justify-end pb-0">
+                            <p class="label-text-alt text-sm text-error" x-text="selectStatusError"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-action">
+            <form method="dialog" class="flex gap-3">
+                <button class="btn" :class="loading ? 'btn-disabled' : '' ">Close</button>
+                <button class="btn btn-primary" type="button" :class="loading ? 'btn-disabled' : '' " x-on:click="submitUser">
+                    <span :class="loading ? 'loading loading-spinner' : '' "></span>
+                    <span x-text="loading ? 'loading' : 'Create User' "></span>
+                </button>
+            </form>
+        </div>
+    </div>
+</dialog>

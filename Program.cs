@@ -1,12 +1,13 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Poseidon.Configurations;
 using Poseidon.Data;
-using Poseidon.Data.Interfaces;
-using Poseidon.Data.Repositories;
 using Poseidon.Endpoints;
+using Poseidon.Repositories;
+using Poseidon.Repositories.Interfaces;
 using Poseidon.Services;
 using Poseidon.Services.Interfaces;
 using Resend;
@@ -28,9 +29,12 @@ builder.Services.AddDbContext<PoseidonDbContext>(options =>
 });
 
 //other services
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmailService, ResendEmailService>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 //Email service api
 builder.Services.AddOptions();
@@ -41,15 +45,15 @@ builder.Services.Configure<ResendClientOptions>(o =>
 });
 builder.Services.AddTransient<IResend, ResendClient>();
 
-//Authentication
-builder.Services.AddAuthentication("PoseidonAuth")
-    .AddCookie("PoseidonAuth", options =>
-    {
-        var authsetting = builder.Configuration.GetSection("Authentication").Get<AuthSetting>();
+var authsetting = builder.Configuration.GetSection("Authentication").Get<AuthSetting>();
 
+//Authentication
+builder.Services.AddAuthentication(authsetting.AuthScheme)
+    .AddCookie(authsetting.AuthScheme, options =>
+    {
         options.Cookie.Name = authsetting.CookieName;
         options.LoginPath = "/Auth/Login";
-        options.AccessDeniedPath = "/Auth/AccessDenied";
+        options.AccessDeniedPath = "/Redirect/AccessDenied";
 
         options.ExpireTimeSpan = TimeSpan.FromMinutes(authsetting.CookieExpireMinutes);
         options.SlidingExpiration = authsetting.UseSlidingExpiration;

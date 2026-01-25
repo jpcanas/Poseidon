@@ -19,8 +19,60 @@ body {
     font-family: 'Nunito Sans', ui-sans-serif, system-ui, sans-serif;
 }
 
+/* alpine js */
+[x-cloak] {
+    display: none !important;
+}
+
 /* Microsoft Edge & Chromium password reveal button */
 input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear {
     display: none;
+}
+
+
+
+
+/* Make Tom Select match DaisyUI select styling */
+/*.ts-wrapper .ts-control {
+    min-height: 3rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    border-radius: var(--rounded-btn, 0.5rem);
+    border-width: 1px;
+    border-color: hsl(var(--bc) / 0.2);
+    background-color: hsl(var(--b1));
+}
+
+.ts-wrapper.focus .ts-control {
+    outline: 2px solid hsl(var(--bc) / 0.2);
+    outline-offset: 2px;
+    border-color: hsl(var(--bc) / 0.2);
+}
+
+.ts-wrapper .ts-dropdown {
+    border-radius: var(--rounded-btn, 0.5rem);
+    border-color: hsl(var(--bc) / 0.2);
+    background-color: hsl(var(--b1));
+}
+
+    .ts-wrapper .ts-dropdown .option {
+        padding: 0.5rem 1rem;
+    }
+
+        .ts-wrapper .ts-dropdown .option:hover,
+        .ts-wrapper .ts-dropdown .option.active {
+            background-color: hsl(var(--b2));
+        }*/
+
+/* Error state */
+/*.ts-wrapper.border-error .ts-control {
+    border-color: hsl(var(--er));
+}*/
+
+
+.select option:disabled {
+    color: #d1d5db;
+    opacity: 0.5;
 }

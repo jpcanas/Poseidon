@@ -1,0 +1,35 @@
+﻿@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Invalid Link";
+}
+
+<div class="flex justify-center items-center h-full px-8">
+    <div class="card bg-white shadow-xl max-w-lg w-full">
+        <div class="card-body text-neutral">
+            <!-- Error Icon -->
+            <div class="flex justify-center mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-20 text-error">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+                </svg>
+            </div>
+
+            <h2 class="text-3xl font-bold text-center mb-4">Link Not Valid</h2>
+
+            <div class="space-y-3 mb-6 text-center">
+                <p class="text-lg">The link you're trying to access is no longer valid.</p>
+                <p class="text-base text-neutral/70">This may happen if the link has expired or has already been used.</p>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="card-actions justify-center">
+                <a href="@Url.Action("Login", "Auth")" class="btn btn-primary w-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                    </svg>
+                    Back to Login
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

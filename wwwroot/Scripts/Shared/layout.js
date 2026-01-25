@@ -37,17 +37,17 @@ document.addEventListener('DOMContentLoaded', () => {
     })
 
 
-    document.getElementById("btnTest").addEventListener("click", function () {
-        axios.get('/ping')
-            .then(function (res) {
-                console.log(res.data);
-                document.getElementById("result").innerText = res.data.message;
-            })
-            .catch(function (err) {
-                console.error(err);
-                document.getElementById("result").innerText = "Error!";
-            });
-    });
+    //document.getElementById("btnTest").addEventListener("click", function () {
+    //    axios.get('/ping')
+    //        .then(function (res) {
+    //            console.log(res.data);
+    //            document.getElementById("result").innerText = res.data.message;
+    //        })
+    //        .catch(function (err) {
+    //            console.error(err);
+    //            document.getElementById("result").innerText = "Error!";
+    //        });
+    //});
 });
 
 

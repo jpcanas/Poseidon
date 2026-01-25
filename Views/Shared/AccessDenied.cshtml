@@ -1,16 +1,21 @@
-﻿
+﻿@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Access Denied";
+}
+
+
 <main class="grid min-h-full place-items-center bg-base px-6 py-24 sm:py-32 lg:px-8">
     <div class="text-center">
         <p class="text-base font-semibold text-indigo-400">403</p>
         <h1 class="mt-4 text-5xl font-semibold text-primary sm:text-7xl">You are not authorized</h1>
         <p class="mt-6 text-lg font-medium text-neutral sm:text-xl/8">
-            Sorry, you don't have permission to access this page.<br/>
+            Sorry, you don't have permission to access this page.<br />
             Please contact your administrator if you believe this is an error.
         </p>
         <div class="mt-10 flex items-center justify-center gap-x-6">
             <button onclick="history.back()" class="btn btn-primary">
-            Go Back
-        </button>
+                Go Back
+            </button>
         </div>
     </div>
 </main>

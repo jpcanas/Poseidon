@@ -12,7 +12,9 @@
     <link rel="stylesheet" href="~/css/app.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Poseidon.styles.css" asp-append-version="true" />
 
-    @*<link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />*@
+    @* --- css package -- *@
+    <link rel="stylesheet" href="~/css/tom-select/tom-select.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/toastify/toastify.css" asp-append-version="true" />
 
     <environment include="Development">
         <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.24/dist/full.min.css" rel="stylesheet" type="text/css" />
@@ -36,16 +38,16 @@
 
             @await Html.PartialAsync("Navigation/_Topbar")
 
-            <div class="px-6">
+            <div class="p-6 bg-gray-50">
                 @RenderBody()
             </div>
 
 
-            <footer>
+            @*<footer>
                 <div>
                     &copy; 2025 - Poseidon - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                 </div>
-            </footer>
+            </footer>*@
 
             <div role="alert" class="alert sticky bottom-0 bg-orange-100 hidden" id="alertWarningSessionExp">
                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -81,8 +83,11 @@
     <input type="hidden" id="forcedLogoutTime" value="@InactivityOptions.Value.ForcedLogoutTimeSeconds" />
 
     @*  ---- Packages --- *@
-    <script src="~/js/alphinejs/cdn.min.js" asp-append-version="true"></script>
+    <script src="~/js/alphinejs/cdn.min.js" asp-append-version="true" defer></script>
     <script src="~/js/axios/axios.min.js" asp-append-version="true"></script>
+    <script src="~/js/ag-grid-community/ag-grid-community.min.js" asp-append-version="true"></script>
+    <script src="~/js/tom-select/tom-select.complete.min.js" asp-append-version="true"></script>
+    <script src="~/js/toastify/toastify.js" asp-append-version="true"></script>
 
     @*  ---- Shared --- *@
     <script src="~/Scripts/Shared/layout.js" asp-append-version="true"></script>

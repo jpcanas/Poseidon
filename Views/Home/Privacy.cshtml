@@ -1,6 +1,63 @@
 ﻿@{
     ViewData["Title"] = "Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div x-data="{ activeTab: 'personal' }" class="bg-white rounded-lg shadow-sm">
+    <div class="flex flex-col md:flex-row min-h-[calc(100vh-115px)]">
+        <!-- Sidebar -->
+        <div class="w-72 p-6 border-r border-gray-200">
+            <div class="space-y-2">
+                <!-- Personal Information Tab -->
+                <button x-on:click="activeTab = 'personal'"
+                        :class="activeTab === 'personal' ? 'bg-gray-200 text-gray-900' : 'text-gray-700 hover:bg-gray-100'"
+                        class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    <span class="font-medium">Personal Information</span>
+                </button>
+
+                <!-- Account Information Tab -->
+                <button x-on:click="activeTab = 'account'"
+                        :class="activeTab === 'account' ? 'bg-gray-200 text-gray-900' : 'text-gray-700 hover:bg-gray-100'"
+                        class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span class="font-medium">Account Information</span>
+                </button>
+
+                <!-- Change Password Tab -->
+                <button x-on:click="activeTab = 'password'"
+                        :class="activeTab === 'password' ? 'bg-gray-200 text-gray-900' : 'text-gray-700 hover:bg-gray-100'"
+                        class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                    </svg>
+                    <span class="font-medium">Change Password</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 p-8">
+            <!-- Personal Information Content -->
+            <div x-show="activeTab === 'personal'">
+                <h1 class="text-3xl font-semibold text-gray-900 mb-6">Personal information</h1>
+                <p class="text-gray-600">Personal information content goes here...</p>
+            </div>
+
+            <!-- Account Information Content -->
+            <div x-show="activeTab === 'account'">
+                <h1 class="text-3xl font-semibold text-gray-900 mb-6">Account Information</h1>
+                <p class="text-gray-600">Account information content goes here...</p>
+            </div>
+
+            <!-- Change Password Content -->
+            <div x-show="activeTab === 'password'">
+                <h1 class="text-3xl font-semibold text-gray-900 mb-6">Change Password</h1>
+                <p class="text-gray-600">Change password form goes here...</p>
+            </div>
+        </div>
+    </div>
+</div>
