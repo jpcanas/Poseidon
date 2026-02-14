@@ -1,4 +1,5 @@
-﻿using Poseidon.Models.Entities;
+﻿using Poseidon.Configurations;
+using Poseidon.Models.Entities;
 using Poseidon.Services.Interfaces;
 using Resend;
 
@@ -7,37 +8,58 @@ namespace Poseidon.Services
     public class ResendEmailService : IEmailService
     {
         private readonly IResend _resend;
+        private readonly Dictionary<string, EmailTemplateConfig> _emailTemplates;
 
-        public ResendEmailService(IResend resend)
+        public ResendEmailService(IResend resend, IConfiguration configuration)
         {
             _resend = resend;
+
+            var templateList  = configuration
+                .GetSection("EmailTemplates")
+                .Get<List<EmailTemplateConfig>>() ?? new List<EmailTemplateConfig>();
+
+            _emailTemplates = templateList
+                .Where(t => t.IsActive)
+                .ToDictionary(t => t.Name, t => t);
         }
 
-        public async Task SendEmail(User logUser, string token)
+        public async Task<bool> SendEmailAsync(string templateName, string toEmail, Dictionary<string, object> variables)
         {
-            string resetPasswordLink = "";
-            //send example email 
+            return await SendEmailAsync(templateName, new[] { toEmail }, variables);
+        }
+
+        public async Task<bool> SendEmailAsync(string templateName, string[] toEmails, Dictionary<string, object> variables)
+        {
             try
             {
-                var message = new EmailMessage();
-                message.From = "Poseidon <onboarding@resend.dev>";
-                message.To.Add(logUser.Email);
-                message.Subject = "Password Reset Request";
-                message.HtmlBody = $"<h4>Hello {logUser.UserName} !</h4>" +
-                    $"<p>We received a request to reset your password.</p></br>  " +
-                    $"<p>Use the link below to choose a new password:</p></br>" +
-                     $"<p>Token:{token}</p></br>" +
-                    $"<a href=\"{resetPasswordLink}\" class=\"button\">Reset Password</a></br>" +
-                    $"<p>If you didn’t request this, please ignore this message.</p></br>" +
-                    $"<p>This link will expire in 10 minutes for security reasons.</p></br>";
+                if (!_emailTemplates.TryGetValue(templateName, out var template))
+                {
+                    // Log exception properly
+                    return false; // Template not found
+                }
 
-                var res = await _resend.EmailSendAsync(message);
+                var resp = await _resend.EmailSendAsync(
+                    new EmailMessage()
+                    {
+                        From = $"{template.FromName} <{template.FromEmail}>",
+                        To = toEmails,
+                        Subject = template.Subject,
+                        Template = new EmailMessageTemplate()
+                        {
+                            TemplateId = template.TemplateId,
+                            Variables = variables,
+                        }
+                    }
+                );
+
+                return resp != null;
             }
             catch (Exception ex)
             {
-                var exceptionEmail = ex;
+                // Log exception properly
+                return false;
+
             }
-            
         }
     }
 }

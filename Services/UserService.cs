@@ -45,7 +45,7 @@ namespace Poseidon.Services
         {
             return await _userRepository.GetStatus();
         }
-        public async Task<int> AddUser(UserVM userVM)
+        public async Task<User?> AddUser(UserVM userVM)
         {
             var newUser = new User
             {
@@ -70,5 +70,30 @@ namespace Poseidon.Services
         {
             return await _userRepository.GetUserByEmailOrUsername(email, username);
         }
+
+        public async Task<UserVM> UpdateUserData(UserVM userModel)
+        {
+            var userEntity = await _userRepository.UpdateUserData(userModel);
+            UserVM updatedUser = new UserVM();
+            if (userEntity != null)
+            {
+                updatedUser.UserId = userEntity.UserId;
+                updatedUser.Email = userEntity.Email;
+                updatedUser.UserName = userEntity.UserName;
+                updatedUser.RoleId = userEntity.Role.RoleId;
+                updatedUser.RoleName = userEntity.Role.RoleName;
+                updatedUser.UserStatusId = userEntity.UserStatusId;
+                updatedUser.StatusName = userEntity.UserStatus?.Name;
+                updatedUser.FirstName = userEntity.FirstName;
+                updatedUser.LastName = userEntity.LastName;
+                updatedUser.MiddleName = userEntity.MiddleName;
+                updatedUser.BiologicalSex = userEntity.BiologicalSex;
+                updatedUser.BirthDate = userEntity.BirthDate;
+                updatedUser.MobileNumber = userEntity.MobileNumber;
+                updatedUser.Address = userEntity.Address;
+            }
+            return updatedUser;
+        }
+
     }
 }

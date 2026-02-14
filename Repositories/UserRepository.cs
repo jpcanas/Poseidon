@@ -71,17 +71,17 @@ namespace Poseidon.Repositories
                     Description = s.Description
                 }).ToListAsync();
         }
-        public async Task<int> AddUser(User newUser)
+        public async Task<User?> AddUser(User newUser)
         {
             try
             {
                 _context.Users.Add(newUser);
                 await _context.SaveChangesAsync();
-                return newUser.UserId;
+                return newUser;
             }
             catch (Exception ex)
             {
-                return 0;
+                return null;
             }
 
         }
@@ -177,6 +177,53 @@ namespace Poseidon.Repositories
             {
                 return 0;
             }
+        }
+        public async Task<User?> UpdateUserData(UserVM userModel)
+        {
+            try
+            {
+                var user = await _context.Users
+                        .Include(u => u.Role)
+                        .Include(s => s.UserStatus)
+                        .FirstOrDefaultAsync(u => u.UserId == userModel.UserId);
+
+                if (user != null)
+                {
+                    user.UserName = userModel.UserName;
+                    user.FirstName = userModel.FirstName;
+                    user.LastName = userModel.LastName;
+                    user.MiddleName = userModel.MiddleName;
+                    user.BiologicalSex = userModel.BiologicalSex;
+                    user.MobileNumber = userModel.MobileNumber;
+                    user.Address = userModel.Address;
+                    user.BirthDate = userModel.BirthDate;
+                    await _context.SaveChangesAsync();
+                }
+
+                return user;
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+        public async Task<User?> GetUserById(int userId)
+        {
+            try
+            {
+                var user = await _context.Users
+                .Include(u => u.Role)
+                .Include(s => s.UserStatus)
+                .FirstOrDefaultAsync(u => u.UserId == userId);
+
+                return user;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+
         }
     }
 }

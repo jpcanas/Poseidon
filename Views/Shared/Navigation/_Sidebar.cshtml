@@ -110,7 +110,9 @@ transition-transform transform -translate-x-full md:translate-x-0 duration-300 e
 
             <div class="ml-11 my-0 space-y-1 text-base overflow-hidden max-h-0 transition-all duration-300 ease-in-out text-sm"
                  x-bind:style="openSettings ? 'max-height: 220px; margin-bottom: 10px;' : 'max-height: 0; margin-top: 0' ">
-                <a href="#" class="block py-2 px-2 hover:bg-base-200 rounded">My Profile</a>
+                <a asp-controller="Setting" asp-action="ProfileSetting" class="block py-2 px-2 hover:bg-base-200 rounded @SetNavItemActive("Setting","ProfileSetting")">
+                    My Profile
+                </a>
                 <a asp-controller="Setting" asp-action="UserSetting" class="block py-2 px-2 hover:bg-base-200 rounded @SetNavItemActive("Setting","UserSetting")">
                     User Setting
                 </a>

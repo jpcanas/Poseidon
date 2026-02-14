@@ -1,0 +1,62 @@
+﻿@model Poseidon.Models.ViewModels.UserVM
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<script>
+    window.userProfileData = @Html.Raw(Json.Serialize(Model));
+</script>
+
+<div class="space-y-4" x-data="profileData">
+    @Html.AntiForgeryToken()
+    <h1 class="text-2xl font-bold text-gray-900">Profile Settings</h1>
+    <div class="card bg-white shadow rounded-lg overflow-hidden">
+        <div class="h-24 bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-700 relative">
+            <button class="absolute top-4 right-4 btn btn-circle btn-sm bg-white/20 border-none hover:bg-white/30">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5 text-white">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="px-8 pb-6 pt-4 -mt-12 relative z-10">
+            <div class="flex flex-col sm:flex-row items-start sm:items-end gap-4">
+                <div class="avatar relative">
+                    <div class="w-24 rounded-lg ring ring-white ring-4 bg-white">
+                        <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" alt="Profile" />
+                    </div>
+                    <button class="absolute -bottom-1 -right-1 btn btn-circle btn-sm bg-primary border-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="flex-1 pb-1">
+                    <h2 class="text-2xl font-semibold text-neutral" x-text="`${firstnameDisplay} ${lastnameDisplay}`"></h2>
+                    <p class="text-sm text-gray-500" x-text="rolenameDisplay"></p>
+                </div>
+                <div class="badge badge-lg text-green-700 bg-green-100 mb-1 border-none font-semibold" x-text="statusDisplay"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card bg-white shadow-sm rounded-lg">
+        <div class="card-body p-0">
+
+            <div role="tablist" class="tabs tabs-bordered p-6">
+                <input type="radio" name="account_tabs" role="tab" class="tab text-base [&:checked]:font-bold" aria-label="Details" checked />
+                @await Html.PartialAsync("~/Views/Setting/ProfileSetting_Components/_ProfileDetailsTab.cshtml")
+
+                <input type="radio" name="account_tabs" role="tab" class="tab text-base [&:checked]:font-bold" aria-label="Security" />
+                @await Html.PartialAsync("~/Views/Setting/ProfileSetting_Components/_ChangePasswordTab.cshtml")
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/app/Setting/profilesetting.js" asp-append-version="true"></script>
+}
+

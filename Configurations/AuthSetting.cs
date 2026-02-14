@@ -11,7 +11,9 @@ namespace Poseidon.Configurations
         public bool EnableAbsoluteExpiration { get; set; } = false;
         public int AbsoluteExpireHours { get; set; } = 8;
         public int PasswordResetTokenExpiryMinutes { get; set; } = 30;
+        public int PasswordResetTokenExpiryHours { get; set; } = 24;
         public string AuthScheme { get; set; } = string.Empty;
+        public string BaseUrl { get; set; } = string.Empty;
     }
     public class InactivitySetting
     {

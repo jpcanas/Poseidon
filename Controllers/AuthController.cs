@@ -50,19 +50,9 @@ namespace Poseidon.Controllers
             User? userByEmail = await _authService.GetUserByEmail(loginCreds.Email);
             if (userByEmail != null && userByEmail.RequiredPasswordChange)
             {
-                var existingToken = await _authService.GetActiveResetToken(userByEmail.UserId);
-                string? token = existingToken != null ? existingToken.Token :
-                    await _authService.GenerateResetToken(userByEmail.Email);
+                await _authService.SendEmailResetPassword(userByEmail);
+                var url = Url.Action("NewUserLoginPrompt", "Auth");
 
-                var url = Url.Action("NewPasswordSetup", "Auth", new
-                {
-                    userId = userByEmail.UserIdentifier,
-                    resetToken = token
-                });
-
-                //actual implementation would be to send email with token link and user id
-                // await _emailService.SendEmail(logUser, token);
-                // var url = Url.Action("NewUserLoginPrompt", "Auth");
                 return Ok(new
                 {
                     Success = true,
@@ -102,48 +92,13 @@ namespace Poseidon.Controllers
             return Ok(new { status = "active" });
 
         }
-        //[Authorize]
-        //[HttpGet]
-        //public IActionResult GetCookieExpiry()
-        //{
-        //    var cookie = Request.Cookies["PoseidonCookie"];
-        //    if (cookie == null)
-        //        return Unauthorized();
 
-        //    var ticket = HttpContext.AuthenticateAsync("PoseidonAuth").Result;
-        //    if (ticket == null || !ticket.Succeeded)
-        //        return Unauthorized();
-
-        //    var props = ticket.Properties;
-
-        //    if (props.IssuedUtc.HasValue && props.ExpiresUtc.HasValue)
-        //    {
-        //        var now = DateTimeOffset.UtcNow;
-        //        var remaining = props.ExpiresUtc.Value - now;
-
-        //        var rem = now - props.IssuedUtc.Value;
-
-        //        var lifetime = TimeSpan.FromMinutes(1);
-
-        //        return Ok(new
-        //        {
-        //            status = "active",
-        //            issuedUtc = props.IssuedUtc.Value.ToLocalTime(),
-        //            expiresUtc = props.ExpiresUtc.Value.ToLocalTime(),
-        //            remainingSeconds = (int)remaining.TotalSeconds
-        //        });
-        //    }
-
-        //    // If expiration timestamps are not available
-        //    return Ok(new { status = "active", message = "No expiration info available" });
-
-        //}
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync(_authSetting.AuthScheme); //add the scheme
+            await HttpContext.SignOutAsync(_authSetting.AuthScheme); 
 
             return Ok();
         }
@@ -177,29 +132,13 @@ namespace Poseidon.Controllers
 
             User? logUser = await _authService.GetUserByEmail(forgotPassword.Email);
 
-            string message = "If the address you entered is registered, we’ve sent instructions to reset your password." +
-                    "\r\n Please check your inbox (and your spam folder) for further steps.";
-
-            string? token = null;
             if (logUser != null)
             {
-                // check for the existence of token for user and if not expire
-                var existingToken = await _authService.GetActiveResetToken(logUser.UserId);
-                token = existingToken != null ? existingToken.Token :
-                     await _authService.GenerateResetToken(logUser.Email);
-
-                //await _emailService.SendEmail(logUser, token);
+                await _authService.SendEmailResetPassword(logUser);
             }
 
-            //temporary reset link
-            string userGuid = logUser != null ? logUser.UserIdentifier.ToString() : "";
-            string? resetLink = Url.Action("NewPasswordSetup", "Auth", new
-            {
-                userId = userGuid,
-                resetToken = token
-            });
+            return Ok(new { msg = "" });
 
-            return Ok(new {msg = message , tempResetLink = resetLink }); //tempResetLink is temporRY ONLY FOR TESTING PURPOSES
         }
 
         [Route("Auth/NewPasswordSetup/{userId}")]

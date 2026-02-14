@@ -1,0 +1,29 @@
+{
+  "EmailTemplates": [
+    {
+      "Name": "PasswordReset",
+      "TemplateId": "361b25d9-e4b2-4e2b-87ea-9ec16ef91888",
+      "Subject": "Reset Your Password in 30 Minutes",
+      "FromEmail": "no-reply@mordstudio.com",
+      "FromName": "No-reply",
+      "IsActive": true,
+      "Description": "Email sent when user requests password reset",
+      "Variables": [ "PASSWORD_RESET_LINK", "EXPIRY_TIME" ]
+    },
+    {
+      "Name": "NewUserWelcome",
+      "TemplateId": "5d99d3c3-a361-498b-8121-85e2bba437bc",
+      "Subject": "Welcome! Set Up Your Password",
+      "FromEmail": "no-reply@mordstudio.com",
+      "FromName": "No-reply",
+      "IsActive": true,
+      "Description": "Email sent to new users to set their password",
+      "Variables": [
+        "USER_EMAIL",
+        "PASSWORD_RESET_LINK",
+        "EXPIRY_TIME"
+      ]
+    }
+  ]
+
+}

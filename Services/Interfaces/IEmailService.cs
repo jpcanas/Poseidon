@@ -4,6 +4,7 @@ namespace Poseidon.Services.Interfaces
 {
     public interface IEmailService
     {
-        Task SendEmail(User logUser, string token);
+        Task<bool> SendEmailAsync(string templateName, string toEmail, Dictionary<string, object> variables);
+        Task<bool> SendEmailAsync(string templateName, string[] toEmails, Dictionary<string, object> variables);
     }
 }

@@ -27,7 +27,7 @@
 </head>
 <body>
 
-    <div class="flex h-screen bg-white text-neutral">
+    <div class="flex h-screen bg-gray-50 text-neutral">
         @await Html.PartialAsync("Navigation/_Sidebar")
 
         <div id="overlay"
@@ -83,15 +83,15 @@
     <input type="hidden" id="forcedLogoutTime" value="@InactivityOptions.Value.ForcedLogoutTimeSeconds" />
 
     @*  ---- Packages --- *@
-    <script src="~/js/alphinejs/cdn.min.js" asp-append-version="true" defer></script>
-    <script src="~/js/axios/axios.min.js" asp-append-version="true"></script>
-    <script src="~/js/ag-grid-community/ag-grid-community.min.js" asp-append-version="true"></script>
-    <script src="~/js/tom-select/tom-select.complete.min.js" asp-append-version="true"></script>
-    <script src="~/js/toastify/toastify.js" asp-append-version="true"></script>
+    <script src="~/js/lib/alphinejs/cdn.min.js" asp-append-version="true" defer></script>
+    <script src="~/js/lib/axios/axios.min.js" asp-append-version="true"></script>
+    <script src="~/js/lib/ag-grid-community/ag-grid-community.min.js" asp-append-version="true"></script>
+    <script src="~/js/lib/tom-select/tom-select.complete.min.js" asp-append-version="true"></script>
+    <script src="~/js/lib/toastify/toastify.js" asp-append-version="true"></script>
 
     @*  ---- Shared --- *@
-    <script src="~/Scripts/Shared/layout.js" asp-append-version="true"></script>
-    <script src="~/Scripts/Shared/sidebar.js" asp-append-version="true"></script>
+    <script src="~/js/app/Shared/layout.js" asp-append-version="true"></script>
+    <script src="~/js/app/Shared/sidebar.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 

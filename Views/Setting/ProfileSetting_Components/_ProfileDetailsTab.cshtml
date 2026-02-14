@@ -1,0 +1,173 @@
+﻿
+<div role="tabpanel" class="tab-content p-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+        <h3 class="text-lg font-bold text-neutral">Personal Information</h3>
+        <button class="btn btn-sm btn-primary mt-2 sm:mt-0 w-24" onclick="profileEditModal.showModal()">Edit</button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="mb-4">
+            <label class="text-sm font-semibold text-gray-500 mb-1 block">Email</label>
+            <p class="font-semibold text-neutral" x-text="emailDisplay"></p>
+        </div>
+
+        <div class="mb-4">
+            <label class="text-sm font-medium text-gray-500 mb-1 block">Username</label>
+            <p class="font-semibold text-neutral" x-text="usernameDisplay"></p>
+        </div>
+
+        <div class="mb-4">
+            <label class="text-sm font-medium text-gray-500 mb-1 block">Role</label>
+            <p class="font-semibold text-neutral" x-text="rolenameDisplay"></p>
+        </div>
+
+        <div class="mb-4">
+            <label class="text-sm font-medium text-gray-500 mb-1 block">First Name</label>
+            <p class="font-semibold text-neutral" x-text="firstnameDisplay"></p>
+        </div>
+
+        <div class="mb-4">
+            <label class="text-sm font-medium text-gray-500 mb-1 block">Last Name</label>
+            <p class="font-semibold text-neutral" x-text="lastnameDisplay"></p>
+        </div>
+
+        <div class="mb-4">
+            <label class="text-sm font-medium text-gray-500 mb-1 block">Middle Name</label>
+            <p class="font-semibold text-neutral" x-text="middlenameDisplay"></p>
+        </div>
+
+        <div class="mb-4">
+            <label class="text-sm font-medium text-gray-500 mb-1 block">Sex</label>
+            <p class="font-semibold text-neutral" x-text="sexDisplay"></p>
+        </div>
+
+        <div class="mb-4">
+            <label class="text-sm font-medium text-gray-500 mb-1 block">Date of Birth</label>
+            <p class="font-semibold text-neutral" x-text="birthdateDisplay"></p>
+        </div>
+
+        <div class="mb-4">
+            <label class="text-sm font-medium text-gray-500 mb-1 block">Mobile Number</label>
+            <p class="font-semibold text-neutral" x-text="mobilenumDisplay"></p>
+        </div>
+
+        <div class="md:col-span-2 lg:col-span-3">
+            <label class="text-sm font-medium text-gray-500 mb-1 block">Address</label>
+            <p class="font-semibold text-neutral" x-text="addressDisplay"></p>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<dialog id="profileEditModal" class="modal">
+    <div class="modal-box max-w-4xl">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="font-bold text-xl">Edit Personal Information</h3>
+            <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost">✕</button>
+            </form>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-medium">Username<span class="text-error">*</span></span>
+                </label>
+                <input type="text"
+                       x-model="username"
+                       class="input input-bordered w-full"
+                       :class="userNameError == '' ? '' : 'input-error' "
+                       x-on:blur="validateUserInput('userName')" />
+                <div class="label justify-end pb-0">
+                    <p class="label-text-alt text-sm text-error" x-text="userNameError"></p>
+                </div>
+            </div>
+
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-medium">First Name<span class="text-error">*</span></span>
+                </label>
+                <input type="text"
+                       x-model="firstname"
+                       class="input input-bordered w-full"
+                       :class="firstNameError == '' ? '' : 'input-error' "
+                       x-on:blur="validateUserInput('firstName')" />
+                <div class="label justify-end pb-0">
+                    <p class="label-text-alt text-sm text-error" x-text="firstNameError"></p>
+                </div>
+            </div>
+
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-medium">Last Name<span class="text-error">*</span></span>
+                </label>
+                <input type="text"
+                       x-model="lastname"
+                       class="input input-bordered w-full"
+                       :class="lastNameError == '' ? '' : 'input-error' "
+                       x-on:blur="validateUserInput('lastName')" />
+                <div class="label justify-end pb-0">
+                    <p class="label-text-alt text-sm text-error" x-text="lastNameError"></p>
+                </div>
+            </div>
+
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-medium">Middle Name</span>
+                </label>
+                <input type="text" x-model="middlename" class="input input-bordered w-full" />
+            </div>
+
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-medium">Sex<span class="text-error">*</span></span>
+                </label>
+                @{
+                    var sexOptions = ViewBag.SexOptions;
+                }
+
+            <select class="select select-bordered w-full" 
+                    id="selectSex"
+                    :class="selectSexError == '' ? '' : 'select-error' "
+                    x-on:blur="validateUserInput('sex')">
+                <option value="" disabled>--Select</option>
+                @foreach (var sex in sexOptions)
+                {
+                    <option value="@sex.value">@sex.text</option>
+                }
+            </select>
+            </div>
+
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-medium">Date of Birth</span>
+                </label>
+                <input type="date" class="input input-bordered w-full" x-model="birthdate" />
+            </div>
+
+            <div class="form-control md:col-span-2">
+                <label class="label">
+                    <span class="label-text font-medium">Mobile Number</span>
+                </label>
+                <input type="tel" x-model="mobile" class="input input-bordered w-full" />
+            </div>
+
+            <div class="form-control md:col-span-2">
+                <label class="label">
+                    <span class="label-text font-medium">Address</span>
+                </label>
+                <textarea x-model="address" class="textarea textarea-bordered w-full" rows="3"></textarea>
+            </div>
+        </div>
+
+        <div class="modal-action">
+            <form method="dialog">
+                <button class="btn btn-ghost">Cancel</button>
+            </form>
+            <button class="btn btn-primary" :class="loading ? 'btn-disabled' : '' " x-on:click="submitUpdateUser">
+                <span :class="loading ? 'loading loading-spinner' : '' "></span>
+                <span x-text="loading ? 'loading' : 'Save Changes' "></span>
+            </button>
+        </div>
+    </div>
+</dialog>

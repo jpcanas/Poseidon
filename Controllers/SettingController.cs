@@ -2,10 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
 using Poseidon.Enums;
+using Poseidon.Models.Entities;
 using Poseidon.Models.ViewModels;
+using Poseidon.Models.ViewModels.Auth;
 using Poseidon.Services.Interfaces;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Poseidon.Controllers
@@ -14,10 +17,12 @@ namespace Poseidon.Controllers
     public class SettingController : Controller
     {
         private readonly IUserService _userService;
+        private readonly IAuthService _authService;
 
-        public SettingController(IUserService userService)
+        public SettingController(IUserService userService, IAuthService authService)
         {
             _userService = userService;
+            _authService = authService;
         }
 
         public async Task<IActionResult> UserSetting()
@@ -34,11 +39,47 @@ namespace Poseidon.Controllers
                 }).ToList();
             return View();
         }
+        [Authorize]
+        public async Task<IActionResult> ProfileSetting()
+        {
+            var currentUserGuid = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            UserVM? userModel = new UserVM();
+
+            ViewBag.SexOptions = Enum.GetValues<BiologicalSexType>()
+               .Select(e => new
+               {
+                   value = (int)e,
+                   text = typeof(BiologicalSexType)
+                           .GetField(e.ToString())
+                           .GetCustomAttribute<DisplayAttribute>()?.Name ?? e.ToString()
+               }).ToList();
+
+            if (!string.IsNullOrEmpty(currentUserGuid))
+            {
+                userModel = await _authService.GetUserByGuid(currentUserGuid);    
+            }
+
+            return View(userModel);
+        }
+
+        [HttpGet("Setting/GetCurrentUser")]
+        public async Task<IActionResult> GetCurrentUser()
+        {
+            var currentUserGuid = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            UserVM? userModel = new UserVM();
+
+            if (!string.IsNullOrEmpty(currentUserGuid))
+            {
+                userModel = await _authService.GetUserByGuid(currentUserGuid);
+            }
+
+            return Ok(userModel);
+        }
 
         [HttpGet("Setting/Users")]
         public async Task<IActionResult> GetUsers()
         {
-            var users =  await _userService.GetUserTable();
+            var users = await _userService.GetUserTable();
             return Ok(users);
         }
 
@@ -72,12 +113,84 @@ namespace Poseidon.Controllers
                     });
             }
 
-            var userId = await _userService.AddUser(user);
-            string msg = userId > 0 ? "User successfully added" : "Something went wrong. Cannot insert user";
+            string msg = "Something went wrong. Cannot insert user";
+
+            var newUser = await _userService.AddUser(user);
+            if (newUser != null)
+            {
+                msg = "User successfully added";
+                await _authService.SendWelcomeEmail(newUser);
+            }
+
             return Ok(new
             {
-                isUserAdded = userId > 0,
+                isUserAdded = newUser != null,
                 message = new { general = msg }
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateUser([FromBody] UserVM userUpdate)
+        {
+
+            if (userUpdate is null)
+                return BadRequest(new
+                {
+                    user = new UserVM(),
+                    message = new { general = "Update Failed" }
+                });
+
+            var duplicateUsername = await _userService.GetUserByEmailorUsername(username: userUpdate.UserName);
+
+            if (duplicateUsername != null && duplicateUsername.UserId != userUpdate.UserId)
+                return BadRequest(new
+                {
+                    user = new UserVM(),
+                    message = new { username = "Username already exists" }
+                });
+
+            UserVM updatedUser = await _userService.UpdateUserData(userUpdate);
+
+            return Ok(new
+            {
+                user = updatedUser,
+                message = new { general = "User data successfully updated" }
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateUserPassword([FromBody] UserPasswordVM passwordData)
+        {
+            if (!ModelState.IsValid || passwordData == null)
+            {
+                Dictionary<string, string[]?>? errors = ModelState
+                    .Where(x => x.Value?.Errors.Count > 0)
+                    .ToDictionary(
+                        kvp => kvp.Key,
+                        kvp => kvp.Value?.Errors.Select(e => e.ErrorMessage).ToArray()
+                        );
+
+                return BadRequest(new { Success = false, Errors = errors });
+            }
+
+            object? currentPasswordValidity = await _authService.CheckExistingPasswordForUpdate(passwordData);
+            if (currentPasswordValidity != null)
+            {
+                return BadRequest(new
+                {
+                    Success = false,
+                    Errors = currentPasswordValidity
+                });
+            }
+
+            int updateResult = await _authService.UpdateUserPassword(passwordData.UserId, passwordData.NewPassword);
+
+            return Ok(new
+            {
+                Success = updateResult > 0,
+                Errors = new { General = new string[] { string.Empty } }
             });
         }
     }

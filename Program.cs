@@ -17,10 +17,14 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Configuration.AddJsonFile("emailtemplates.json", optional: false, reloadOnChange: true);
+
 builder.Services.Configure<AuthSetting>(
     builder.Configuration.GetSection("Authentication"));
 builder.Services.Configure<InactivitySetting>(
     builder.Configuration.GetSection("InactivitySetting"));
+builder.Services.Configure<List<EmailTemplateConfig>>(
+    builder.Configuration.GetSection("EmailTemplates"));
 
 //db connection
 builder.Services.AddDbContext<PoseidonDbContext>(options =>

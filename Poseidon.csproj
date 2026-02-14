@@ -14,11 +14,12 @@
 	<ItemGroup>
 	  <Folder Include="wwwroot\images\" />
 	  <Folder Include="wwwroot\icons\" />
+	  <Folder Include="wwwroot\Scripts\" />
 	</ItemGroup>
 	
 	<ItemGroup>
-	  <None Include="wwwroot\Scripts\Shared\layout.js" />
-	  <None Include="wwwroot\Scripts\Shared\sidebar.js" />
+	  <None Include="wwwroot\js\app\Shared\layout.js" />
+	  <None Include="wwwroot\js\app\Shared\sidebar.js" />
 	</ItemGroup>
 	
 	<ItemGroup>
