@@ -75,6 +75,7 @@ namespace Poseidon.Controllers
 
             await HttpContext.SignInAsync(_authSetting.AuthScheme, cookieClaims.Principal, cookieClaims.AuthProperties);
 
+            await _authService.SetLastLoginDateTime(logUser.UserId);
             string? redirect = !string.IsNullOrEmpty(redirectUrl) && Url.IsLocalUrl(redirectUrl) ? redirectUrl : Url.Action("Index", "Home");
 
             return Ok( new

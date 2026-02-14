@@ -15,7 +15,7 @@ namespace Poseidon.Repositories
         }
         public async Task<User?> GetUser(string? email)
         {
-            if(string.IsNullOrWhiteSpace(email))
+            if (string.IsNullOrWhiteSpace(email))
                 return null;
 
             var user = await _context.Users
@@ -154,7 +154,6 @@ namespace Poseidon.Repositories
             {
                 return 0;
             }
-
         }
 
         public async Task<int> UpdateUserPassword(int userId, string newHashedPassword)
@@ -197,6 +196,8 @@ namespace Poseidon.Repositories
                     user.MobileNumber = userModel.MobileNumber;
                     user.Address = userModel.Address;
                     user.BirthDate = userModel.BirthDate;
+                    user.UpdatedBy = userModel.UpdatedBy;
+                    user.UpdatedDate = DateTime.UtcNow;
                     await _context.SaveChangesAsync();
                 }
 
@@ -224,6 +225,22 @@ namespace Poseidon.Repositories
                 return null;
             }
 
+        }
+        public async Task SetLastLoginDateTime(int userId)
+        {
+            try
+            {
+                var user = await _context.Users.FindAsync(userId);
+                if (user != null)
+                {
+                    user.LastLoginDatetime = DateTime.UtcNow;
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+            }
         }
     }
 }

@@ -29,7 +29,7 @@ builder.Services.Configure<List<EmailTemplateConfig>>(
 //db connection
 builder.Services.AddDbContext<PoseidonDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("PoseidonDb"));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("PoseidonDb"));
 });
 
 //other services

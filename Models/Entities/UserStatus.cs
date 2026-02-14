@@ -19,7 +19,10 @@ namespace Poseidon.Models.Entities
         public bool IsActive { get; set; } = true;
 
         public bool AffectsAccess { get; set; } = false;
-        public DateTime CreatedDate { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public string CreatedBy { get; set; } = string.Empty;
+        public DateTime? UpdatedDate { get; set; }
+        public string? UpdatedBy { get; set; }
         public List<User>? Users { get; set; }
     }
 }

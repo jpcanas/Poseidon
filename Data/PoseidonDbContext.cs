@@ -27,47 +27,6 @@ namespace Poseidon.Data
             //    .HasOne(u => u.Role)
             //    .WithMany(r => r.Users)
             //    .HasForeignKey(u => u.RoleId);
-
-            //modelBuilder.Entity<User>()
-            //    .Property(u => u.UserIdentifier)
-            //    .HasDefaultValueSql("NEWID()");
-
-            //modelBuilder.Entity<Role>()
-            //    .Property(r => r.CreatedDate)
-            //    .HasDefaultValueSql("GETDATE()");
-
-            //modelBuilder.Entity<User>()
-            //    .Property(u => u.CreatedDate)
-            //    .HasDefaultValueSql("GETDATE()");
-
-            //modelBuilder.Entity<User>()
-            //    .HasIndex(u => u.UserIdentifier)
-            //    .IsUnique(true);
-
-            //modelBuilder.Entity<User>()
-            //    .HasIndex(u => u.Email)
-            //    .IsUnique(true);
-
-            //modelBuilder.Entity<User>()
-            //    .HasIndex(u => u.UserName)
-            //    .IsUnique(true);
-
-            //modelBuilder.Entity<User>()
-            //  .HasOne(u => u.UserStatus)
-            //  .WithMany(s => s.Users)
-            //  .HasForeignKey(u => u.UserStatusId);
-
-            //modelBuilder.Entity<UserStatus>()
-            //   .Property(s => s.CreatedDate)
-            //   .HasDefaultValueSql("GETDATE()");
-
-            //modelBuilder.Entity<UserStatus>().HasData(
-            //    new UserStatus
-            //    {
-            //        UserStatusId = 1,
-            //        Name = "Active",
-            //    }
-            // );
         }
     }
 }

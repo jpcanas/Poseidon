@@ -224,6 +224,9 @@ namespace Poseidon.Services
 
             return null;
         }
-
+        public async Task SetLastLoginDateTime(int userId)
+        {
+            await _userRepository.SetLastLoginDateTime(userId);
+        }
     }
 }

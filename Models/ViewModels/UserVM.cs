@@ -55,7 +55,9 @@ namespace Poseidon.Models.ViewModels
         [MaxLength(1000)]
         public string? Address { get; set; }
         public DateTime? CreatedDate { get; set; }
+        public string CreatedBy { get; set; } = string.Empty;
         public DateTime? UpdatedDate { get; set; }
+        public string? UpdatedBy { get; set; }
 
         [Required]
         public int RoleId { get; set; }

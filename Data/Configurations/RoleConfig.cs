@@ -8,8 +8,29 @@ namespace Poseidon.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Role> builder)
         {
-            builder.Property(r => r.CreatedDate)
-                .HasDefaultValueSql("GETDATE()");
+            builder
+                .Property(u => u.CreatedDate)
+                .HasDefaultValueSql("now()");
+
+            builder.HasData(new Role
+            {
+                RoleId = 1,
+                RoleName = "Admin",
+                RoleType = "System",
+                Description = "System administrator with full access",
+                IsActive = true,
+                CreatedBy = "System"
+            });
+
+            builder.HasData(new Role
+            {
+                RoleId = 2,
+                RoleName = "User",
+                RoleType = "Default",
+                Description = "Standard application user",
+                IsActive = true,
+                CreatedBy = "System"
+            });
         }
     }
 }

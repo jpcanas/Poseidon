@@ -21,5 +21,6 @@ namespace Poseidon.Services.Interfaces
         Task<UserVM?> GetUserByGuid(string userId);
         Task<User?> GetUserById(int userId);
         Task<object?> CheckExistingPasswordForUpdate(UserPasswordVM userPassword);
+        Task SetLastLoginDateTime(int userId);
     }
 }

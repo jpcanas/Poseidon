@@ -115,6 +115,8 @@ namespace Poseidon.Controllers
 
             string msg = "Something went wrong. Cannot insert user";
 
+            user.CreatedBy = User.FindFirst(ClaimTypes.Email)?.Value ?? string.Empty;
+
             var newUser = await _userService.AddUser(user);
             if (newUser != null)
             {
@@ -150,6 +152,7 @@ namespace Poseidon.Controllers
                     message = new { username = "Username already exists" }
                 });
 
+            userUpdate.UpdatedBy = User.FindFirst(ClaimTypes.Email)?.Value;
             UserVM updatedUser = await _userService.UpdateUserData(userUpdate);
 
             return Ok(new

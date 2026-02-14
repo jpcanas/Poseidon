@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Repositories\\p_projects\\Poseidon\\Poseidon.csproj": {}
+    "C:\\Repositories\\p_projects\\Poseidon2\\Poseidon\\Poseidon.csproj": {}
   },
   "projects": {
-    "C:\\Repositories\\p_projects\\Poseidon\\Poseidon.csproj": {
+    "C:\\Repositories\\p_projects\\Poseidon2\\Poseidon\\Poseidon.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Repositories\\p_projects\\Poseidon\\Poseidon.csproj",
+        "projectUniqueName": "C:\\Repositories\\p_projects\\Poseidon2\\Poseidon\\Poseidon.csproj",
         "projectName": "Poseidon",
-        "projectPath": "C:\\Repositories\\p_projects\\Poseidon\\Poseidon.csproj",
+        "projectPath": "C:\\Repositories\\p_projects\\Poseidon2\\Poseidon\\Poseidon.csproj",
         "packagesPath": "C:\\Users\\jpcan\\.nuget\\packages\\",
-        "outputPath": "C:\\Repositories\\p_projects\\Poseidon\\obj\\",
+        "outputPath": "C:\\Repositories\\p_projects\\Poseidon2\\Poseidon\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -73,6 +73,10 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[9.0.8, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[9.0.4, )"
             },
             "Resend": {
               "target": "Package",

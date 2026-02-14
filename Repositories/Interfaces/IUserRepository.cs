@@ -16,6 +16,7 @@ namespace Poseidon.Repositories.Interfaces
         Task<User?> GetUserById(int userId);
         Task<List<User>> GetUsers(string? status = null);
         Task<int> MarkPasswordResetTokenAsUsed(int tokenId);
+        Task SetLastLoginDateTime(int userId);
         Task<User?> UpdateUserData(UserVM userModel);
         Task<int> UpdateUserPassword(int userId, string newHashedPassword);
         Task<int> UpdateUserRequirePasswordChange(int userId, bool requireChange);

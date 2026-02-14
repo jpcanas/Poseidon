@@ -56,11 +56,11 @@ namespace Poseidon.Services
                 LastName = userVM.LastName,
                 RoleId = userVM.RoleId,
                 UserStatusId = userVM.UserStatusId,
-                CreatedDate = DateTime.UtcNow,
                 RequiredPasswordChange = true,
                 BiologicalSex = userVM.BiologicalSex,
                 BirthDate = userVM.BirthDate,
                 Address = userVM.Address,
+                CreatedBy = userVM.CreatedBy,
             };
 
             return await _userRepository.AddUser(newUser);
