@@ -22,6 +22,37 @@ namespace Poseidon.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Poseidon.Models.Entities.Module", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Modules");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Manage people and their access levels to ensure secure and compliant usage of the app",
+                            Name = "User and Access Control"
+                        });
+                });
+
             modelBuilder.Entity("Poseidon.Models.Entities.PasswordResetToken", b =>
                 {
                     b.Property<int>("Id")
@@ -71,10 +102,13 @@ namespace Poseidon.Migrations
                         .HasDefaultValueSql("now()");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsSystemRole")
                         .HasColumnType("boolean");
 
                     b.Property<string>("RoleName")
@@ -102,6 +136,7 @@ namespace Poseidon.Migrations
                             CreatedBy = "System",
                             Description = "System administrator with full access",
                             IsActive = true,
+                            IsSystemRole = true,
                             RoleName = "Admin",
                             RoleType = "System"
                         },
@@ -111,8 +146,127 @@ namespace Poseidon.Migrations
                             CreatedBy = "System",
                             Description = "Standard application user",
                             IsActive = true,
+                            IsSystemRole = false,
                             RoleName = "User",
                             RoleType = "Default"
+                        });
+                });
+
+            modelBuilder.Entity("Poseidon.Models.Entities.RolePermission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SubModuleId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.HasIndex("SubModuleId");
+
+                    b.ToTable("RolePermissions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            RoleId = 1,
+                            SubModuleId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            RoleId = 1,
+                            SubModuleId = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            RoleId = 1,
+                            SubModuleId = 3
+                        });
+                });
+
+            modelBuilder.Entity("Poseidon.Models.Entities.SubModule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<int>("ModuleId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ModuleId");
+
+                    b.ToTable("SubModules");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Code = "UAC_ASSIGN_ROLES",
+                            Description = "",
+                            ModuleId = 1,
+                            Name = "Assign Roles"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Code = "UAC_ADD_USER",
+                            Description = "",
+                            ModuleId = 1,
+                            Name = "Add User"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Code = "UAC_REMOVE_USER",
+                            Description = "",
+                            ModuleId = 1,
+                            Name = "Remove User"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Code = "UAC_VIEW_USERLIST",
+                            Description = "",
+                            ModuleId = 1,
+                            Name = "View User list"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Code = "UAC_VIEW_ROLES",
+                            Description = "",
+                            ModuleId = 1,
+                            Name = "View Roles"
                         });
                 });
 
@@ -223,7 +377,7 @@ namespace Poseidon.Migrations
                         {
                             UserId = 1,
                             CreatedBy = "System",
-                            Email = "admin@example.com",
+                            Email = "junecanas2@gmail.com",
                             FirstName = "System",
                             LastName = "Administrator",
                             Password = "$2a$12$MZ9oNNn/RfLnn2ipec5FzeeXuTCiHAZDw44Hd3rD8zomXZjOV2Fe6",
@@ -316,6 +470,36 @@ namespace Poseidon.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Poseidon.Models.Entities.RolePermission", b =>
+                {
+                    b.HasOne("Poseidon.Models.Entities.Role", "Role")
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Poseidon.Models.Entities.SubModule", "SubModule")
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("SubModuleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+
+                    b.Navigation("SubModule");
+                });
+
+            modelBuilder.Entity("Poseidon.Models.Entities.SubModule", b =>
+                {
+                    b.HasOne("Poseidon.Models.Entities.Module", "Module")
+                        .WithMany("SubModules")
+                        .HasForeignKey("ModuleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Module");
+                });
+
             modelBuilder.Entity("Poseidon.Models.Entities.User", b =>
                 {
                     b.HasOne("Poseidon.Models.Entities.Role", "Role")
@@ -335,9 +519,21 @@ namespace Poseidon.Migrations
                     b.Navigation("UserStatus");
                 });
 
+            modelBuilder.Entity("Poseidon.Models.Entities.Module", b =>
+                {
+                    b.Navigation("SubModules");
+                });
+
             modelBuilder.Entity("Poseidon.Models.Entities.Role", b =>
                 {
+                    b.Navigation("RolePermissions");
+
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("Poseidon.Models.Entities.SubModule", b =>
+                {
+                    b.Navigation("RolePermissions");
                 });
 
             modelBuilder.Entity("Poseidon.Models.Entities.UserStatus", b =>

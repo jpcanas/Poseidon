@@ -14,6 +14,7 @@ namespace Poseidon.Models.ViewModels
         [MaxLength(200)]
         public string? Description { get; set; }
         public string? RoleType { get; set; }
+        public bool IsSystemRole { get; set; }
 
     }
 }

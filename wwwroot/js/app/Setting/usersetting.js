@@ -1,8 +1,9 @@
 ﻿// Global variables
 let userTableGridApi;
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
     var myGrid = document.querySelector("#myGrid");
+    await getUserPermissions();
 
     const myTheme = agGrid.themeQuartz.withParams({
         spacing: 10,
@@ -14,23 +15,26 @@ document.addEventListener('DOMContentLoaded', function () {
     const columnDefs = [
         {
             headerName: 'Name',
-            field: "fullName",
+            cellRenderer: UserCellRenderer,
+            headerClass: "font-bold text-neutral",
             minWidth: 250,
-            filter: true,
         },
         {
             headerName: 'Role',
             field: "roleName",
+            headerClass: "font-bold text-neutral",
         },
         {
             headerName: 'Sex',
             field: "biologicalSex",
             maxWidth: 120,
+            headerClass: "font-bold text-neutral",
         },
         {
             headerName: 'Date of Birth',
             field: "birthDate",
             cellDataType: 'date',
+            headerClass: "font-bold text-neutral",
             valueGetter: (params) => {
                 return params.data.birthDate ? new Date(params.data.birthDate) : null;
             },
@@ -46,31 +50,34 @@ document.addEventListener('DOMContentLoaded', function () {
             filter: true,
         },
         {
-            headerName: 'Email Address',
-            field: "email",
-            filter: true,
-        },
-        {
             headerName: 'Status',
             field: "status",
+            headerClass: "font-bold text-neutral",
+            maxWidth: 160,
             filter: true,
         },
         {
             headerName: 'Address',
             field: "address",
+            headerClass: "font-bold text-neutral",
             filter: true,
-        },
-        {
+        },  
+
+    ];   
+
+    if (hasPermission("UAC_ADD_USER")) {
+        columnDefs.push({
             colId: "actions",
             headerName: "Actions",
+            headerClass: "font-bold text-neutral",
             cellRenderer: ButtonEdit,
             maxWidth: 150,
-        },
-    ];
+        },)
+    }
 
     function ButtonEdit(params) {
         const eButton = document.createElement('button');
-        eButton.className = 'btn btn-sm';
+        eButton.className = 'btn btn-sm btn-primary btn-outline';
 
         const svgNS = "http://www.w3.org/2000/svg";
         const svg = document.createElementNS(svgNS, "svg");
@@ -95,6 +102,34 @@ document.addEventListener('DOMContentLoaded', function () {
         return eButton;
     }
 
+    function UserCellRenderer(params) {
+        const userData = params.value || params.data;
+        const fullName = userData.fullName || userData.name || 'N/A';
+        const email = userData.email || '';
+        const avatarUrl = userData.avatarUrl || userData.avatar || ''; 
+
+        return `
+            <div class="flex items-center gap-3 h-full">
+            ${avatarUrl ?
+                `<div class="avatar">
+                    <div class="w-10">
+                        <img src="${avatarUrl}" alt="${fullName}" />
+                     </div>
+                  </div>` 
+                : `<div class="avatar placeholder">
+                      <div class="bg-neutral text-neutral-content w-10 rounded-full">
+                         <span class="text-lg">${fullName.charAt(0).toUpperCase()}</span>
+                      </div>
+                    </div>`
+            }
+              <div class="flex flex-col">
+                <span class="font-semibold text-sm">${fullName}</span>
+                <span class="text-xs text-gray-500">${email}</span>
+              </div>
+            </div>
+          `;
+    }
+
     const gridOptions = {
         defaultColDef: {
             flex: 1,
@@ -105,6 +140,8 @@ document.addEventListener('DOMContentLoaded', function () {
         columnDefs,
         // pagination: true,
         theme: myTheme,
+        rowHeight: 70,
+        rowClass: "flex items-center",
         //rowSelection: {
         //    mode: 'multiRow',
         //},
@@ -124,7 +161,7 @@ function loadUserData() {
             return userTableGridApi.setGridOption("rowData", res.data)
         })
         .catch(function (error) {
-            console.log(error);
+            console.error(error);
         });
 }
 
@@ -137,7 +174,7 @@ document.addEventListener('alpine:init', () => {
         firstName: '',
         lastName: '',
         selectSex: '',
-        birthDate: '',
+        birthDate: null,
         address: '',
         selectRole: '',
         selectStatus: '',
@@ -149,6 +186,12 @@ document.addEventListener('alpine:init', () => {
         selectRoleError: '',
         selectStatusError: '',
         loading: false,
+
+        async init() {
+            const dateBirthElem = document.querySelector('#dateBirthNew');
+            const dateBirth = new Datepicker(dateBirthElem, DatePickerOptions());
+            this.birthdate = dateBirth;
+        },
 
         validateNewUser(input) {
 
@@ -229,7 +272,7 @@ document.addEventListener('alpine:init', () => {
                 firstName = '',
                 lastName = '',
                 selectSex = '',
-                birthDate = '',
+                birthDate = null,
                 address = '',
                 selectRole = '',
                 selectStatus = '',
@@ -258,7 +301,7 @@ document.addEventListener('alpine:init', () => {
                 RoleId: parseInt(this.selectRole),
                 UserStatusId: parseInt(this.selectStatus),
                 BiologicalSex: parseInt(this.selectSex),
-                BirthDate: this.birthDate,
+                BirthDate: this.birthdate.getDate("yyyy-mm-dd"),
                 Address: this.address,
             }
 
@@ -268,35 +311,19 @@ document.addEventListener('alpine:init', () => {
             if (result.success) {
                 this.resetForm();
                 loadUserData();
-
-                Toastify({
-                    text: result.message.general,
-                    className: "text-white mx-5",
-                    duration: 3000,
-                    close: true,
-                    gravity: "bottom",
-                    position: "right",
-                    stopOnFocus: true,
-                    offset: { x: 30, y: 30 },
-                    style: {
-                        background: "#059669",
-                        borderRadius: "0.5rem",
-                        padding: "1rem",
-                    },
-                }).showToast();
+                showToastify('success', result.message.general)
 
             } else {
                 this.loading = false;
                 if (result.message.general) {
                     this.resetForm();
-                    //show toast
+                    showToastify('error', result.message.general)
                 } if (result.message.email) {
                     this.emailError = result.message.email;
                 } if (result.message.username) {
                     this.userNameError = result.message.username;
                 }
             }
-
 
         }
 
@@ -322,18 +349,21 @@ async function registerUser(newUser) {
         }
 
     } catch (error) {
-        let err;
+        let errMsg;
 
-        if (error.response?.data)
-            err = error.response.data
-
+        if (error.response?.data &&
+            (error.response?.status == 400 || error.response?.status == 200)) {
+            var err = error.response.data
+            errMsg = err.message
+        }
+        if (error.response?.status == 403) {
+            errMsg = { general: "You are not allowed to Add User" }
+        }
+           
         return {
             success: false,
-            message: err.message
+            message: errMsg
         };
     }
 }
 
-//init() {
-//    this.selectRole = new TomSelect(this.$refs.roleSelect, {})
-//}

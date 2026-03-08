@@ -94,6 +94,41 @@ namespace Poseidon.Services
             }
             return updatedUser;
         }
+        public async Task<RolePermissionVM> GetRolePermissions(int roleId)
+        {
+            return await _roleRepository.GetRolePermissions(roleId);
+        }
+        public async Task<int> SaveRolePermissions(SaveRoleRequestVM request)
+        {
+            Role? role = await _roleRepository.GetSingleRole(request.RoleId);
+            int resultId = 0;
+            if (role == null) // add new role
+            {
+                role = new Role
+                {
+                    RoleName = request.RoleName,
+                    Description = request.Description,
+                    CreatedBy = request.CreatedBy ?? string.Empty,
+                };
+
+                resultId = await _roleRepository.AddRole(role);
+                request.RoleId = resultId;
+            }
+            else // update existing role
+            {
+                role.RoleName = request.RoleName;
+                role.Description = request.Description;
+                role.UpdatedBy = request.UpdatedBy ?? string.Empty;
+                role.UpdatedDate = DateTime.UtcNow;
+
+                resultId = await _roleRepository.UpdateRole(role);
+            }
+
+            await _roleRepository.DeleteRolePermission(role.RoleId);
+            await _roleRepository.AddRolePermissions(request);
+
+            return resultId;
+        }
 
     }
 }

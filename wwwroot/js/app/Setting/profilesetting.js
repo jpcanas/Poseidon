@@ -34,13 +34,19 @@ document.addEventListener('alpine:init', function () {
         notMatchError: '',
         loading: false,
         passwordLoading: false,
-        redirectCountdown: 6,
+        forgotpasswordLoading: false,
+        redirectCountdown: 10,
         countdownInterval: null,
 
         async init() {
+            const dateBirthElem = document.querySelector('#dateBirth');
+            const dateBirth = new Datepicker(dateBirthElem, DatePickerOptions());
+            this.birthdate = dateBirth;
+
             const result = await loadCurrentUserData();
             if (result.success) {
                 this.initializedForm(result)
+                dateBirth.setDate(result.user.birthDateInput)
             }
         },
 
@@ -201,49 +207,21 @@ document.addEventListener('alpine:init', function () {
                 BiologicalSex: parseInt(document.querySelector('#selectSex').value),
                 MobileNumber: this.mobile,
                 Address: this.address,
-                BirthDate: this.birthdate,
+                BirthDate: this.birthdate.getDate("yyyy-mm-dd"),
             };
 
             var res = await updateUserProfile(userUpdate)
             if (res.success && res.user != null) {
                 this.initializedForm(res);
 
-                Toastify({
-                    text: res.message.general,
-                    className: "text-white mx-5",
-                    duration: 3000,
-                    close: true,
-                    gravity: "bottom",
-                    position: "right",
-                    stopOnFocus: true,
-                    offset: { x: 30, y: 30 },
-                    style: {
-                        background: "#059669",
-                        borderRadius: "0.5rem",
-                        padding: "1rem",
-                    },
-                }).showToast();
+                showToastify('success', res.message.general)
 
                 document.getElementById('profileEditModal').close();
 
             } else {
 
                 if (res.message.general) {
-                    Toastify({
-                        text: res.message.general,
-                        className: "text-white mx-5",
-                        duration: 3000,
-                        close: true,
-                        gravity: "bottom",
-                        position: "right",
-                        stopOnFocus: true,
-                        offset: { x: 30, y: 30 },
-                        style: {
-                            background: "#EF5757",
-                            borderRadius: "0.5rem",
-                            padding: "1rem",
-                        },
-                    }).showToast();
+                    showToastify('error', res.message.general)
                 }
                 if (res.message.username) {
                     this.userNameError = res.message.username;
@@ -256,11 +234,11 @@ document.addEventListener('alpine:init', function () {
         async handlePasswordSubmit() {
             this.passwordLoading = true;
 
-            if (!this.validateUserInput("currentPassword") && !this.validateUserInput("newPassword")) {  
+            if (!this.validateUserInput("currentPassword") && !this.validateUserInput("newPassword")) {
                 this.passwordLoading = false;
                 return
             }
-                
+
             if (!this.isValid) {
                 this.passwordLoading = false;
                 this.newPasswordError = 'Password requirements not met'
@@ -282,29 +260,15 @@ document.addEventListener('alpine:init', function () {
 
             var result = await UpdateUserPassword(passwordData);
             if (result.success) {
-                setTimeout(() => {
-                    this.passwordLoading = false;
-                    const passwordModal = document.querySelector('#modalRedirectLogin');
-                    passwordModal.showModal();
-                    this.startCountdown();
-                }, 2000)
+                this.passwordLoading = false;
+                const passwordModal = document.querySelector('#modalRedirectLogin');
+                document.querySelector('#txtHeaderPasswordChanged').textContent = "Password Changed Successfully!";
+                document.querySelector('#txtDetailsPasswordChanged').textContent = "Your password has been changed successfully. For security reasons, please sign in again using your new password.You will be redirected to the login page to continue.";
+                passwordModal.showModal();
+                this.startCountdown();
             } else {
                 if (result.errors.General) {
-                    Toastify({
-                        text: result.errors.General[0],
-                        className: "text-white mx-5",
-                        duration: 3000,
-                        close: true,
-                        gravity: "bottom",
-                        position: "right",
-                        stopOnFocus: true,
-                        offset: { x: 30, y: 30 },
-                        style: {
-                            background: "#EF5757",
-                            borderRadius: "0.5rem",
-                            padding: "1rem",
-                        },
-                    }).showToast();
+                    showToastify('error', result.errors.General[0])
                 }
                 if (result.errors.currentPassword) {
                     this.currentPasswordError = result.errors.currentPassword[0]
@@ -321,8 +285,24 @@ document.addEventListener('alpine:init', function () {
             this.passwordLoading = false;
         },
 
+        async forgotMyPassword() {
+            this.forgotpasswordLoading = true;
+            var result = await sendResetPasswordEmail(this.emailDisplay)
+            if (result.status == 200) {
+                this.forgotpasswordLoading = false;
+                const passwordModal = document.querySelector('#modalRedirectLogin');
+                document.querySelector('#txtHeaderPasswordChanged').textContent = "Password reset instruction sent";
+                document.querySelector('#txtDetailsPasswordChanged').textContent = result.msg;
+                passwordModal.showModal();
+                this.startCountdown();
+            } else {
+                showToastify('error', result.msg)
+            }
+        },
+
+
     }));
-})
+});
 
 async function loadCurrentUserData() {
     try {
@@ -397,5 +377,36 @@ async function UpdateUserPassword(passwordData) {
             success: false,
             errors: error.response?.data?.errors || {}
         };
+    }
+}
+
+async function sendResetPasswordEmail(emailInput) {
+    const antiForgToken = document.querySelector('input[name="__RequestVerificationToken"]').value;
+    try {
+        const res = await axios.post('/Auth/ResetPassword', { Email: emailInput },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    "RequestVerificationToken": antiForgToken
+                }
+            }
+        )
+
+        return {
+            status: res.status,
+            msg: "Password reset instructions have been sent to your email. For security purposes, you will be logged out of the system. Please check your email to reset your password.",
+        }
+
+    } catch (error) {
+        let message = "Something went wrong. Please contact admin"
+        if (error.response?.data) {
+            const { Email } = error.response.data;
+            message = Email[0]
+        }
+
+        return {
+            status: error.status,
+            msg: message,
+        }
     }
 }

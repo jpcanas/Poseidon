@@ -28,7 +28,13 @@ namespace Poseidon.Models.ViewModels
         [MaxLength(100)]
         public string? MiddleName { get; set; }
         public DateTime? BirthDate { get; set; }
-
+        public string? BirthDateInput
+        {
+            get
+            {
+                return BirthDate?.ToString("MM/dd/yyyy");
+            }
+        }
         public string? BirthDateString
         {
             get

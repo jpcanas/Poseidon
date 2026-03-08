@@ -1,0 +1,30 @@
+﻿<section class="space-y-4" x-data="permissionForm">
+    <input type="hidden" id="loggedUserRoleId" value="@ViewBag.CurrentUserRoleId"/>
+    <div class="card p-6 bg-white shadow-xl">
+        <div class="py-2 pl-3">
+            <h2 class="text-2xl font-bold text-neutral">Roles and Permission</h2>
+            <p class="text-gray-500">Manage roles and permission</p>
+        </div>
+        <div class="flex-col px-3 pb-3">
+            <div class="my-4 flex justify-between">
+                <div class="flex gap-2 text-lg">
+                    <p class="font-semibold text-gray-500">All Roles</p>
+                    <p class="text-neutral font-bold">2</p>
+                </div>
+                <button class="btn btn-primary btn-sm" x-on:click="openModal" has-permission="UAC_ASSIGN_ROLES"> 
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                    Add Role
+                </button>
+            </div>
+            <div id="roleTable" class="" style="height: 620px; width:100%;"></div>
+        </div>
+    </div>
+
+    @await Html.PartialAsync("~/Views/Setting/RolePermission_Components/_AddRoleModal.cshtml")
+</section>
+
+@section Scripts {
+    <script src="~/js/app/Setting/rolepermission.js" asp-append-version="true"></script>
+}

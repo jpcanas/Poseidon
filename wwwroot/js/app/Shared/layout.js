@@ -36,18 +36,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }, false)
     })
 
+    //const elem = document.querySelector('#vanillaPckr');
+    //const datepicker = new Datepicker(elem, {
+    //    clearButton: true,
+    //    format: 'MM dd yyyy'
+    //}); 
 
-    //document.getElementById("btnTest").addEventListener("click", function () {
-    //    axios.get('/ping')
-    //        .then(function (res) {
-    //            console.log(res.data);
-    //            document.getElementById("result").innerText = res.data.message;
-    //        })
-    //        .catch(function (err) {
-    //            console.error(err);
-    //            document.getElementById("result").innerText = "Error!";
-    //        });
-    //});
+    //datepicker.setDate('03-23-2026')
+
 });
 
 

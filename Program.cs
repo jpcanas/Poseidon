@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Poseidon.Authorization;
 using Poseidon.Configurations;
 using Poseidon.Data;
 using Poseidon.Endpoints;
@@ -15,8 +16,6 @@ using Resend;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
-
 builder.Configuration.AddJsonFile("emailtemplates.json", optional: false, reloadOnChange: true);
 
 builder.Services.Configure<AuthSetting>(
@@ -32,6 +31,8 @@ builder.Services.AddDbContext<PoseidonDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("PoseidonDb"));
 });
 
+builder.Services.AddControllersWithViews();
+
 //other services
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
@@ -39,6 +40,7 @@ builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmailService, ResendEmailService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IPermissionService, PermissionService>();
 
 //Email service api
 builder.Services.AddOptions();
@@ -81,12 +83,26 @@ builder.Services.AddAuthentication(authsetting.AuthScheme)
                 // Default behavior (normal web request)
                 context.Response.Redirect(context.RedirectUri);
                 return Task.CompletedTask;
+            },
+            OnRedirectToAccessDenied = context =>
+            {
+                // Handle 403 Forbidden - just return status code
+                if (context.Request.Headers["X-Requested-With"] == "XMLHttpRequest" ||
+                    context.Request.Headers["Accept"].ToString().Contains("application/json"))
+                {
+                    context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                    return Task.CompletedTask;  // ? Just return 403, no JSON body
+                }
+                context.Response.Redirect(context.RedirectUri);
+                return Task.CompletedTask;
             }
         };
 
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddPermissionAuthorization(); //permission-based authorization
+//builder.Services.AddAuthorization();
 
 var app = builder.Build();
 

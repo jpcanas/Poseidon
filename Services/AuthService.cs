@@ -31,11 +31,13 @@ namespace Poseidon.Services
         {
             var claims = new List<Claim>
             {
-               new Claim(ClaimTypes.NameIdentifier, loguser.UserIdentifier.ToString()),
+               new Claim(ClaimTypes.NameIdentifier, loguser.UserId.ToString()),
+               new Claim("UserGuid", loguser.UserIdentifier.ToString()),
                 new Claim("FirstName", loguser.FirstName),
                 new Claim("LastName", loguser.LastName),
                 new Claim(ClaimTypes.Email, loguser.Email),
                new Claim(ClaimTypes.Role, loguser.Role.RoleName),
+               new Claim("RoleId", loguser.Role.RoleId.ToString()),
             };
 
             var identity = new ClaimsIdentity(claims, _authSetting.CookieName);

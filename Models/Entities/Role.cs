@@ -8,9 +8,9 @@ namespace Poseidon.Models.Entities
 
         [Required]
         [MaxLength(100)]
-        public string RoleName { get; set; }
+        public string RoleName { get; set; } = string.Empty;
 
-        [MaxLength(200)]
+        [MaxLength(1000)]
         public string? Description { get; set; }
         public string? RoleType { get; set; }
         public List<User>? Users { get; set; }
@@ -19,5 +19,7 @@ namespace Poseidon.Models.Entities
         public string CreatedBy { get; set; } = string.Empty;
         public DateTime? UpdatedDate { get; set; }
         public string? UpdatedBy { get; set; }  
+        public bool IsSystemRole { get; set; } = false;
+        public List<RolePermission> RolePermissions { get; set; } = new();
     }
 }

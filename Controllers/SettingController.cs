@@ -13,18 +13,21 @@ using System.Threading.Tasks;
 
 namespace Poseidon.Controllers
 {
-    [Authorize]
     public class SettingController : Controller
     {
         private readonly IUserService _userService;
         private readonly IAuthService _authService;
+        private readonly IPermissionService _permissionService;
 
-        public SettingController(IUserService userService, IAuthService authService)
+        public SettingController(IUserService userService, IAuthService authService, IPermissionService permissionService)
         {
             _userService = userService;
             _authService = authService;
+            _permissionService = permissionService;
         }
 
+        #region User Setting
+        [Authorize(Policy = "UAC_VIEW_USERLIST")]
         public async Task<IActionResult> UserSetting()
         {
             ViewBag.Roles = await _userService.GetRoleList();
@@ -42,7 +45,7 @@ namespace Poseidon.Controllers
         [Authorize]
         public async Task<IActionResult> ProfileSetting()
         {
-            var currentUserGuid = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var currentUserGuid = User.FindFirst("UserGuid")?.Value;
             UserVM? userModel = new UserVM();
 
             ViewBag.SexOptions = Enum.GetValues<BiologicalSexType>()
@@ -56,16 +59,17 @@ namespace Poseidon.Controllers
 
             if (!string.IsNullOrEmpty(currentUserGuid))
             {
-                userModel = await _authService.GetUserByGuid(currentUserGuid);    
+                userModel = await _authService.GetUserByGuid(currentUserGuid);
             }
 
             return View(userModel);
         }
 
+        [Authorize]
         [HttpGet("Setting/GetCurrentUser")]
         public async Task<IActionResult> GetCurrentUser()
         {
-            var currentUserGuid = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var currentUserGuid = User.FindFirst("UserGuid")?.Value;
             UserVM? userModel = new UserVM();
 
             if (!string.IsNullOrEmpty(currentUserGuid))
@@ -76,6 +80,7 @@ namespace Poseidon.Controllers
             return Ok(userModel);
         }
 
+        [Authorize]
         [HttpGet("Setting/Users")]
         public async Task<IActionResult> GetUsers()
         {
@@ -83,6 +88,7 @@ namespace Poseidon.Controllers
             return Ok(users);
         }
 
+        [Authorize(Policy = "UAC_ADD_USER")]
         [HttpPost("Setting/AddUser")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddUser([FromBody] UserVM user)
@@ -196,5 +202,72 @@ namespace Poseidon.Controllers
                 Errors = new { General = new string[] { string.Empty } }
             });
         }
+        #endregion
+
+        #region Roles and Permission
+        [Authorize(Policy = "UAC_VIEW_ROLES")]
+        public IActionResult RolesAndPermission()
+        {
+            ViewBag.CurrentUserRoleId = User.FindFirst("RoleId")?.Value;
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetRoles()
+        {
+            var roles = await _userService.GetRoleList();
+            return Ok(roles);
+        }
+
+        [HttpGet("Setting/GetPermissions/{roleId}")]
+        public async Task<IActionResult> GetPermissions(int roleId)
+        {
+            var permissions = await _userService.GetRolePermissions(roleId);
+            return Ok(permissions);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SaveRolePermission([FromBody] SaveRoleRequestVM roleRequest)
+        {
+            if (roleRequest.RoleId == 0)
+            {
+                roleRequest.CreatedBy = User.FindFirst(ClaimTypes.Email)?.Value;
+            }
+            else
+            {
+                roleRequest.UpdatedBy = User.FindFirst(ClaimTypes.Email)?.Value;
+            }
+
+            int resultId = await _userService.SaveRolePermissions(roleRequest);
+            if (resultId == 0)
+            {
+                return BadRequest(new
+                {
+                    Success = false,
+                    Message = "Failed to save role and permissions"
+                });
+            }
+
+            return Ok(new
+            {
+                Success = resultId > 0,
+                Message = "Role and permissions successfully saved"
+            });
+        }
+
+        public async Task<IActionResult> GetMyPermissions()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if(userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized();
+            }
+
+            var permissions = await _permissionService.GetUserPermissions(userId);
+            return Ok(new { permissions });
+        }
+        #endregion
+
     }
 }

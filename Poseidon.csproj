@@ -5,6 +5,17 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <Compile Remove="wwwroot\icons\**" />
+	  <Compile Remove="wwwroot\Scripts\**" />
+	  <Content Remove="wwwroot\icons\**" />
+	  <Content Remove="wwwroot\Scripts\**" />
+	  <EmbeddedResource Remove="wwwroot\icons\**" />
+	  <EmbeddedResource Remove="wwwroot\Scripts\**" />
+	  <None Remove="wwwroot\icons\**" />
+	  <None Remove="wwwroot\Scripts\**" />
+	</ItemGroup>
 	
 	<ItemGroup>
 		<UpToDateCheckBuilt Include="wwwroot/css/site.css" Set="Css" />
@@ -12,9 +23,8 @@
 	</ItemGroup>
 	
 	<ItemGroup>
+	  <Folder Include="Filters\" />
 	  <Folder Include="wwwroot\images\" />
-	  <Folder Include="wwwroot\icons\" />
-	  <Folder Include="wwwroot\Scripts\" />
 	</ItemGroup>
 	
 	<ItemGroup>

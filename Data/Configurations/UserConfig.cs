@@ -47,7 +47,7 @@ namespace Poseidon.Data.Configurations
                     UserIdentifier = Guid.Parse("00000000-0000-0000-0000-000000000001"),
                     UserName = "admin",
                     Password = "$2a$12$MZ9oNNn/RfLnn2ipec5FzeeXuTCiHAZDw44Hd3rD8zomXZjOV2Fe6",
-                    Email = "admin@example.com",
+                    Email = "junecanas2@gmail.com",
                     RoleId = 1,
                     FirstName = "System",
                     LastName = "Administrator",

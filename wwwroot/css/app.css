@@ -76,3 +76,9 @@ input[type="password"]::-ms-clear {
     color: #d1d5db;
     opacity: 0.5;
 }
+
+
+.ag-cell {
+    display: flex;
+    align-items: center;
+}

@@ -20,7 +20,7 @@ namespace Poseidon.Controllers
             return View();
         }
 
-        [Authorize(Roles = "Adviser")]
+        [Authorize(Policy = "UAC_VIEW_USERLIST")]
         public IActionResult Privacy()
         {
             return View();

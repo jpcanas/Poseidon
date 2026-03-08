@@ -19,8 +19,8 @@
                             <span class="label-text">Email Address <span class="text-error">*</span></span>
                         </div>
                         <input type="text" placeholder=""
-                               class="input input-bordered w-full"
-                               :class="emailError == '' ? '' : 'input-error' "
+                               class="input input-bordered w-full focus:outline-none focus:border-primary"
+                               :class="emailError == '' ? '' : 'input-error focus:outline-none focus:border-error' "
                                x-model="email"
                                x-on:blur="validateNewUser('email')" />
                         <div class="label justify-end pb-0">
@@ -32,8 +32,8 @@
                             <span class="label-text">Username</span>
                         </div>
                         <input type="text" placeholder=""
-                               class="input input-bordered w-full"
-                               :class="userNameError == '' ? '' : 'input-error' "
+                               class="input input-bordered w-full focus:outline-none focus:border-primary"
+                               :class="userNameError == '' ? '' : 'input-error focus:outline-none focus:border-error'"
                                x-model="userName" />
                         <div class="label justify-end pb-0">
                             <p class="label-text-alt text-sm text-error" x-text="userNameError"></p>
@@ -44,8 +44,8 @@
                             <span class="label-text">First Name <span class="text-error">*</span></span>
                         </div>
                         <input type="text" placeholder=""
-                               class="input input-bordered w-full"
-                               :class="firstNameError == '' ? '' : 'input-error' "
+                               class="input input-bordered w-full focus:outline-none focus:border-primary"
+                               :class="firstNameError == '' ? '' : 'input-error focus:outline-none focus:border-error' "
                                x-model="firstName"
                                x-on:blur="validateNewUser('firstName')" />
                         <div class="label justify-end pb-0">
@@ -57,8 +57,8 @@
                             <span class="label-text">Last Name <span class="text-error">*</span></span>
                         </div>
                         <input type="text" placeholder=""
-                               class="input input-bordered w-full"
-                               :class="lastNameError == '' ? '' : 'input-error' "
+                               class="input input-bordered w-full focus:outline-none focus:border-primary"
+                               :class="lastNameError == '' ? '' : 'input-error focus:outline-none focus:border-error' "
                                x-model="lastName"
                                x-on:blur="validateNewUser('lastName')" />
                         <div class="label justify-end pb-0">
@@ -69,8 +69,8 @@
                         <div class="label pt-0">
                             <span class="label-text">Biological Sex <span class="text-error">*</span></span>
                         </div>
-                        <select class="select select-bordered w-full"
-                                :class="selectSexError == '' ? '' : 'select-error' "
+                        <select class="select select-bordered w-full focus:outline-none focus:border-primary"
+                                :class="selectSexError == '' ? '' : 'select-error focus:outline-none focus:border-error' "
                                 x-model="selectSex"
                                 x-on:blur="validateNewUser('sex')">
                             <option value="" disabled>-- Select</option>
@@ -94,7 +94,7 @@
                         <div class="label pt-0">
                             <span class="label-text">Birthdate</span>
                         </div>
-                        <input type="Date" placeholder="" class="input input-bordered w-full" x-model="birthDate"/>
+                        <input type="text" placeholder="" class="input input-bordered w-full focus:outline-none focus:border-primary" id="dateBirthNew"/>
                         <div class="label justify-end pb-0">
                             <p class="label-text-alt text-sm text-error"></p>
                         </div>
@@ -103,7 +103,7 @@
                         <div class="label pt-0">
                             <span class="label-text">Address</span>
                         </div>
-                        <input type="text" placeholder=""  class="input input-bordered w-full" x-model="address"/>
+                        <input type="text" placeholder=""  class="input input-bordered w-full focus:outline-none focus:border-primary" x-model="address"/>
                         <div class="label justify-end pb-0">
                             <p class="label-text-alt text-sm text-error"></p>
                         </div>
@@ -124,8 +124,8 @@
                         <div class="label pt-0">
                             <span class="label-text">Role <span class="text-error">*</span></span>
                         </div>
-                        <select class="select select-bordered w-full"
-                                :class="selectRoleError == '' ? '' : 'select-error' "
+                        <select class="select select-bordered w-full focus:outline-none focus:border-primary"
+                                :class="selectRoleError == '' ? '' : 'select-error focus:outline-none focus:border-error' "
                                 x-model="selectRole"
                                 x-on:blur="validateNewUser('role')">
                             <option value="" disabled>-- Select a role</option>
@@ -149,8 +149,8 @@
                         <div class="label pt-0">
                             <span class="label-text">Status <span class="text-error">*</span></span>
                         </div>
-                        <select class="select select-bordered w-full"
-                                :class="selectStatusError == '' ? '' : 'select-error' "
+                        <select class="select select-bordered w-full focus:outline-none focus:border-primary"
+                                :class="selectStatusError == '' ? '' : 'select-error focus:outline-none focus:border-error' "
                                 x-model="selectStatus"
                                 x-on:blur="validateNewUser('status')">
                             <option value="" disabled>-- Select a status</option>

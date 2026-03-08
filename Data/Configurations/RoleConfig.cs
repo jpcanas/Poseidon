@@ -8,6 +8,11 @@ namespace Poseidon.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Role> builder)
         {
+            builder.HasMany(r => r.RolePermissions)
+                .WithOne(rp => rp.Role)
+                .HasForeignKey(rp => rp.RoleId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             builder
                 .Property(u => u.CreatedDate)
                 .HasDefaultValueSql("now()");
@@ -19,6 +24,7 @@ namespace Poseidon.Data.Configurations
                 RoleType = "System",
                 Description = "System administrator with full access",
                 IsActive = true,
+                IsSystemRole = true,
                 CreatedBy = "System"
             });
 
