@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Poseidon.Data;
@@ -11,9 +12,11 @@ using Poseidon.Data;
 namespace Poseidon.Migrations
 {
     [DbContext(typeof(PoseidonDbContext))]
-    partial class PoseidonDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260308141807_AddedSubmodule")]
+    partial class AddedSubmodule
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -453,7 +456,7 @@ namespace Poseidon.Migrations
                         {
                             UserStatusId = 1,
                             AffectsAccess = false,
-                            Color = "green",
+                            Color = "",
                             CreatedBy = "System",
                             Description = "Default status for active users",
                             IsActive = true,
@@ -463,7 +466,7 @@ namespace Poseidon.Migrations
                         {
                             UserStatusId = 2,
                             AffectsAccess = false,
-                            Color = "red",
+                            Color = "",
                             CreatedBy = "System",
                             Description = "Default status for inactive users",
                             IsActive = true,

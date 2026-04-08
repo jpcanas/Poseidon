@@ -53,7 +53,7 @@ document.addEventListener('alpine:init', () => {
             this.loading = true;
 
             var result = await login(this.email, this.password, this.rememberMe);
-
+            console.log(result.redirectUrl);
             if (result.success) {
                 this.loading = false
                 window.location.href = result.redirectUrl; 

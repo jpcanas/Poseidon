@@ -14,6 +14,5 @@ namespace Poseidon.Models.ViewModels
 
         [MaxLength(1000)]
         public string? Description { get; set; } = string.Empty;
-
     }
 }

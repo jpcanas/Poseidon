@@ -1,5 +1,9 @@
 ﻿// Global functions and variales
 let userPermissions = [];
+const base = document.querySelector('meta[name="path-base"]')?.content ?? '';
+axios.defaults.baseURL = base;
+const pathBase = base ? `/${base}` : '';
+
 function DatePickerOptions() {
     return {
         clearButton: true,
@@ -53,4 +57,11 @@ async function getUserPermissions() {
 
 function hasPermission(permissionCode) {
     return userPermissions.includes(permissionCode);
+}
+
+const userStatusColorMap = {
+    green: { text: 'text-green-700', bg: 'bg-green-100' },
+    red: { text: 'text-red-700', bg: 'bg-red-100' },
+    yellow: { text: 'text-yellow-700', bg: 'bg-yellow-100' },
+    gray: { text: 'text-gray-700', bg: 'bg-gray-100' },
 }

@@ -22,16 +22,24 @@ namespace Poseidon.Services
 
             List<UserTableVM> userList = users.Select(u => new UserTableVM
             {
+                UserId = u.UserId,
                 Email = u.Email,
                 FullName = $"{u.FirstName} {u.MiddleName} {u.LastName}",
+                UserName = u.UserName,
+                FirstName = u.FirstName,
+                MiddleName = u.MiddleName,
+                LastName = u.LastName,
                 BirthDate = u.BirthDate,
-                BiologicalSex = u.BiologicalSex?.ToString(),
+                BiologicalSex = u.BiologicalSex,
                 Address = u.Address,
                 CreatedDate = u.CreatedDate,
                 UpdatedDate = u.UpdatedDate,
+                RoleId = u.RoleId,
                 RoleName = u.Role?.RoleName,
-                Status = u.UserStatus?.Name
-
+                UserStatusId = u.UserStatusId,
+                Status = u.UserStatus?.Name,
+                MobileNumber = u.MobileNumber,
+                StatusColor = u.UserStatus?.Color
             }).ToList();
 
             return userList;
@@ -129,6 +137,9 @@ namespace Poseidon.Services
 
             return resultId;
         }
-
+        public async Task<int> UpdateUserDatabyAdmin(UserVM userModel)
+        {
+            return await _userRepository.UpdateUserDatabyAdmin(userModel);
+        }
     }
 }

@@ -93,7 +93,7 @@
 
         redirectToLogin() {
             clearInterval(this.countdownInterval);
-            window.location.href = '/Auth/Login';
+            window.location.href = `/${pathBase}/Auth/Login`;
         },
 
         resetForm() {

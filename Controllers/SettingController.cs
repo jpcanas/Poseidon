@@ -202,6 +202,35 @@ namespace Poseidon.Controllers
                 Errors = new { General = new string[] { string.Empty } }
             });
         }
+
+        [HttpPost("Setting/UpdateUserfromAdmin")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateUserfromAdmin([FromBody] UserVM editUser)
+        {
+            if (editUser is null)
+                return BadRequest(new
+                {
+                    success = false,
+                    message = new { general = "Update Failed. No user to update" }
+                });
+
+            var duplicateUsername = await _userService.GetUserByEmailorUsername(username: editUser.UserName);
+            if (duplicateUsername != null && duplicateUsername.UserId != editUser.UserId)
+                return BadRequest(new
+                {
+                    success = false,
+                    message = new { username = "Username already exists" }
+                });
+
+            editUser.UpdatedBy = User.FindFirst(ClaimTypes.Email)?.Value;
+            int updatedUserId = await _userService.UpdateUserDatabyAdmin(editUser);
+            return Ok(new
+            {
+                success = updatedUserId > 0,
+                message = new { general = "User data successfully updated" }
+            });
+        }
+
         #endregion
 
         #region Roles and Permission

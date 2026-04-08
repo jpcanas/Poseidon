@@ -57,6 +57,7 @@ namespace Poseidon.Repositories
             return await _context.Users
                 .Include(u => u.Role)
                 .Include(s => s.UserStatus)
+                .Where(u => u.Role.IsSystemRole == false)
                 .ToListAsync();
 
         }
@@ -73,63 +74,34 @@ namespace Poseidon.Repositories
         }
         public async Task<User?> AddUser(User newUser)
         {
-            try
-            {
-                _context.Users.Add(newUser);
-                await _context.SaveChangesAsync();
-                return newUser;
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
+            _context.Users.Add(newUser);
+            await _context.SaveChangesAsync();
+            return newUser;
 
         }
         public async Task<User?> GetUserByGuid(string userId)
         {
-            try
-            {
-                var user = await _context.Users
+            var user = await _context.Users
                 .Include(u => u.Role)
                 .Include(s => s.UserStatus)
                 .FirstOrDefaultAsync(u => u.UserIdentifier.ToString().ToLower() == userId.ToLower());
 
-                return user;
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-
+            return user;
         }
         public async Task<PasswordResetToken?> GetPasswordResetTokenByIdAndToken(int userId, string token)
         {
-            try
-            {
-                return await _context.PasswordResetTokens
+            return await _context.PasswordResetTokens
                 .FirstOrDefaultAsync(t => t.UserId == userId && t.Token == token);
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
         }
         public async Task<int> MarkPasswordResetTokenAsUsed(int tokenId)
         {
-            try
+            var token = await _context.PasswordResetTokens.FindAsync(tokenId);
+            if (token != null)
             {
-                var token = await _context.PasswordResetTokens.FindAsync(tokenId);
-                if (token != null)
-                {
-                    token.IsUsed = true;
-                    return await _context.SaveChangesAsync();
-                }
-                else
-                {
-                    return 0;
-                }
+                token.IsUsed = true;
+                return await _context.SaveChangesAsync();
             }
-            catch (Exception ex)
+            else
             {
                 return 0;
             }
@@ -137,20 +109,13 @@ namespace Poseidon.Repositories
 
         public async Task<int> UpdateUserRequirePasswordChange(int userId, bool requireChange)
         {
-            try
+            var user = await _context.Users.FindAsync(userId);
+            if (user != null)
             {
-                var user = await _context.Users.FindAsync(userId);
-                if (user != null)
-                {
-                    user.RequiredPasswordChange = requireChange;
-                    return await _context.SaveChangesAsync();
-                }
-                else
-                {
-                    return 0;
-                }
+                user.RequiredPasswordChange = requireChange;
+                return await _context.SaveChangesAsync();
             }
-            catch (Exception ex)
+            else
             {
                 return 0;
             }
@@ -158,89 +123,87 @@ namespace Poseidon.Repositories
 
         public async Task<int> UpdateUserPassword(int userId, string newHashedPassword)
         {
-            try
+            var user = await _context.Users.FindAsync(userId);
+            if (user != null)
             {
-                var user = await _context.Users.FindAsync(userId);
-                if (user != null)
-                {
-                    user.Password = newHashedPassword;
-                    user.UpdatedDate = DateTime.UtcNow;
-                    return await _context.SaveChangesAsync();
-                }
-                else
-                {
-                    return 0;
-                }
+                user.Password = newHashedPassword;
+                user.UpdatedDate = DateTime.UtcNow;
+                return await _context.SaveChangesAsync();
             }
-            catch (Exception ex)
+            else
             {
                 return 0;
             }
         }
         public async Task<User?> UpdateUserData(UserVM userModel)
         {
-            try
+            var user = await _context.Users
+                         .Include(u => u.Role)
+                         .Include(s => s.UserStatus)
+                         .FirstOrDefaultAsync(u => u.UserId == userModel.UserId);
+
+            if (user != null)
             {
-                var user = await _context.Users
-                        .Include(u => u.Role)
-                        .Include(s => s.UserStatus)
-                        .FirstOrDefaultAsync(u => u.UserId == userModel.UserId);
-
-                if (user != null)
-                {
-                    user.UserName = userModel.UserName;
-                    user.FirstName = userModel.FirstName;
-                    user.LastName = userModel.LastName;
-                    user.MiddleName = userModel.MiddleName;
-                    user.BiologicalSex = userModel.BiologicalSex;
-                    user.MobileNumber = userModel.MobileNumber;
-                    user.Address = userModel.Address;
-                    user.BirthDate = userModel.BirthDate;
-                    user.UpdatedBy = userModel.UpdatedBy;
-                    user.UpdatedDate = DateTime.UtcNow;
-                    await _context.SaveChangesAsync();
-                }
-
-                return user;
-
+                user.UserName = userModel.UserName;
+                user.FirstName = userModel.FirstName;
+                user.LastName = userModel.LastName;
+                user.MiddleName = userModel.MiddleName;
+                user.BiologicalSex = userModel.BiologicalSex;
+                user.MobileNumber = userModel.MobileNumber;
+                user.Address = userModel.Address;
+                user.BirthDate = userModel.BirthDate;
+                user.UpdatedBy = userModel.UpdatedBy;
+                user.UpdatedDate = DateTime.UtcNow;
+                await _context.SaveChangesAsync();
             }
-            catch (Exception ex)
-            {
-                return null;
-            }
+
+            return user;
         }
         public async Task<User?> GetUserById(int userId)
         {
-            try
-            {
-                var user = await _context.Users
-                .Include(u => u.Role)
-                .Include(s => s.UserStatus)
-                .FirstOrDefaultAsync(u => u.UserId == userId);
+            var user = await _context.Users
+                 .Include(u => u.Role)
+                 .Include(s => s.UserStatus)
+                 .FirstOrDefaultAsync(u => u.UserId == userId);
 
-                return user;
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
+            return user;
 
         }
         public async Task SetLastLoginDateTime(int userId)
         {
-            try
+            var user = await _context.Users.FindAsync(userId);
+            if (user != null)
             {
-                var user = await _context.Users.FindAsync(userId);
-                if (user != null)
-                {
-                    user.LastLoginDatetime = DateTime.UtcNow;
-                    await _context.SaveChangesAsync();
-                }
+                user.LastLoginDatetime = DateTime.UtcNow;
+                await _context.SaveChangesAsync();
             }
-            catch (Exception ex)
+        }
+        public async Task<int> UpdateUserDatabyAdmin(UserVM userModel)
+        {
+            var user = await _context.Users
+                         .Include(u => u.Role)
+                         .Include(s => s.UserStatus)
+                         .FirstOrDefaultAsync(u => u.UserId == userModel.UserId);
+
+            if (user != null)
             {
-                // Log the exception or handle it as needed
+                user.UserName = userModel.UserName;
+                user.RoleId = userModel.RoleId;
+                user.UserStatusId = userModel.UserStatusId;
+                user.FirstName = userModel.FirstName;
+                user.LastName = userModel.LastName;
+                user.MiddleName = userModel.MiddleName;
+                user.BiologicalSex = userModel.BiologicalSex;
+                user.MobileNumber = userModel.MobileNumber;
+                user.Address = userModel.Address;
+                user.BirthDate = userModel.BirthDate;
+                user.UpdatedBy = userModel.UpdatedBy;
+                user.UpdatedDate = DateTime.UtcNow;
+                await _context.SaveChangesAsync();
+                return user.UserId;
             }
+
+            return 0;
         }
     }
 }

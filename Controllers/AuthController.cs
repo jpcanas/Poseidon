@@ -9,6 +9,7 @@ using Poseidon.Models.ViewModels;
 using Poseidon.Models.ViewModels.Auth;
 using Poseidon.Services.Interfaces;
 using Resend;
+using System;
 using System.Security.Claims;
 
 namespace Poseidon.Controllers
@@ -35,7 +36,8 @@ namespace Poseidon.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login([FromBody] LoginViewModel loginCreds, string? redirectUrl = null)
         {
-            if(!ModelState.IsValid || loginCreds == null)
+            var errorPage = Url.Action("Error", "Home");
+            if (!ModelState.IsValid || loginCreds == null)
             {
                 Dictionary<string, string[]?>? errors = ModelState
                     .Where(x => x.Value?.Errors.Count > 0)
@@ -44,7 +46,7 @@ namespace Poseidon.Controllers
                         kvp => kvp.Value?.Errors.Select(e => e.ErrorMessage).ToArray()
                         );
 
-                return BadRequest(new { Success = false, Errors = errors });
+                return BadRequest(new { Success = false, Errors = errors, RedirectUrl = errorPage });
             }
 
             User? userByEmail = await _authService.GetUserByEmail(loginCreds.Email);
@@ -67,7 +69,8 @@ namespace Poseidon.Controllers
                 return BadRequest(new
                 {
                     Success = false,
-                    Errors = new { General = new string[] { "Invalid email or password" }}
+                    Errors = new { General = new string[] { "Invalid email or password" }},
+                    RedirectUrl = errorPage
                 });
             }
 
@@ -99,13 +102,13 @@ namespace Poseidon.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync(_authSetting.AuthScheme); 
-
+            await HttpContext.SignOutAsync(_authSetting.AuthScheme);
             return Ok();
         }
 
         [Authorize]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AutoLogout()
         {
             await HttpContext.SignOutAsync(_authSetting.AuthScheme);

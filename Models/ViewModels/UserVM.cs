@@ -72,5 +72,6 @@ namespace Poseidon.Models.ViewModels
         [Required]
         public int UserStatusId { get; set; }
         public string StatusName { get; set; } = string.Empty;
+        public string? StatusColor { get; set; }
     }
 }

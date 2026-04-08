@@ -13,5 +13,6 @@ namespace Poseidon.Services.Interfaces
         Task<List<UserTableVM>> GetUserTable(string? status = null);
         Task<int> SaveRolePermissions(SaveRoleRequestVM request);
         Task<UserVM> UpdateUserData(UserVM userModel);
+        Task<int> UpdateUserDatabyAdmin(UserVM userModel);
     }
 }

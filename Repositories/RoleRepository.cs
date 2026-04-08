@@ -30,9 +30,7 @@ namespace Poseidon.Repositories
         }
         public async Task<RolePermissionVM> GetRolePermissions(int roleId)
         {
-            try
-            {
-                var roleData = await _context.Roles
+            var roleData = await _context.Roles
                 .Where(r => r.RoleId == roleId)
                 .Select(r => new
                 {
@@ -43,84 +41,77 @@ namespace Poseidon.Repositories
                     AssignedSubModuleIds = r.RolePermissions.Select(rp => rp.SubModuleId).ToList()
                 }).FirstOrDefaultAsync();
 
-                var modules = await _context.Modules
-                    .Include(m => m.SubModules)
-                    .Select(m => new ModulePermissionVM
-                    {
-                        ModuleId = m.Id,
-                        ModuleName = m.Name,
-                        ModuleDescription = m.Description,
-                        SubModules = m.SubModules.Select(sm => new SubModulePermissionVM
-                        {
-                            SubModuleId = sm.Id,
-                            SubModuleName = sm.Name,
-                            SubModuleDescription = sm.Description,
-                        }).ToList()
-                    }).ToListAsync();
-
-                var rolePermission = new RolePermissionVM();
-
-                if (roleId == 0 && roleData == null)
+            var modules = await _context.Modules
+                .Include(m => m.SubModules)
+                .Select(m => new ModulePermissionVM
                 {
-                    rolePermission = new RolePermissionVM
+                    ModuleId = m.Id,
+                    ModuleName = m.Name,
+                    ModuleDescription = m.Description,
+                    SubModules = m.SubModules.Select(sm => new SubModulePermissionVM
                     {
-                        RoleId = 0,
-                        RoleName = string.Empty,
-                        Description = string.Empty,
-                        IsSystemRole = false,
-                        Permissions = modules.Select(module => new ModulePermissionVM
-                        {
-                            ModuleId = module.ModuleId,
-                            ModuleName = module.ModuleName,
-                            ModuleDescription = module.ModuleDescription,
-                            SubModules = module.SubModules.Select(subModule => new SubModulePermissionVM
-                            {
-                                SubModuleId = subModule.SubModuleId,
-                                SubModuleName = subModule.SubModuleName,
-                                SubModuleDescription = subModule.SubModuleDescription,
-                                IsAssigned = false,
-                            }).ToList(),
+                        SubModuleId = sm.Id,
+                        SubModuleName = sm.Name,
+                        SubModuleDescription = sm.Description,
+                    }).ToList()
+                }).ToListAsync();
 
-                            Enabled = false
+            var rolePermission = new RolePermissionVM();
 
-                        }).ToList()
-                    };
-                }
-                else
-                {
-                    rolePermission = new RolePermissionVM
-                    {
-                        RoleId = roleData.RoleId,
-                        RoleName = roleData.RoleName,
-                        Description = roleData.Description,
-                        IsSystemRole = roleData.IsSystemRole,
-                        Permissions = modules.Select(module => new ModulePermissionVM
-                        {
-                            ModuleId = module.ModuleId,
-                            ModuleName = module.ModuleName,
-                            ModuleDescription = module.ModuleDescription,
-                            SubModules = module.SubModules.Select(subModule => new SubModulePermissionVM
-                            {
-                                SubModuleId = subModule.SubModuleId,
-                                SubModuleName = subModule.SubModuleName,
-                                SubModuleDescription = subModule.SubModuleDescription,
-                                IsAssigned = roleData.AssignedSubModuleIds.Contains(subModule.SubModuleId)
-                            }).ToList(),
-
-                            Enabled = module.SubModules.Any(sm => roleData.AssignedSubModuleIds.Contains(sm.SubModuleId))
-
-                        }).ToList()
-                    };
-                }
-
-                return rolePermission;
-
-            }
-            catch (Exception ex)
+            if (roleId == 0 && roleData == null)
             {
-                return new RolePermissionVM();
+                rolePermission = new RolePermissionVM
+                {
+                    RoleId = 0,
+                    RoleName = string.Empty,
+                    Description = string.Empty,
+                    IsSystemRole = false,
+                    Permissions = modules.Select(module => new ModulePermissionVM
+                    {
+                        ModuleId = module.ModuleId,
+                        ModuleName = module.ModuleName,
+                        ModuleDescription = module.ModuleDescription,
+                        SubModules = module.SubModules.Select(subModule => new SubModulePermissionVM
+                        {
+                            SubModuleId = subModule.SubModuleId,
+                            SubModuleName = subModule.SubModuleName,
+                            SubModuleDescription = subModule.SubModuleDescription,
+                            IsAssigned = false,
+                        }).ToList(),
+
+                        Enabled = false
+
+                    }).ToList()
+                };
+            }
+            else
+            {
+                rolePermission = new RolePermissionVM
+                {
+                    RoleId = roleData.RoleId,
+                    RoleName = roleData.RoleName,
+                    Description = roleData.Description,
+                    IsSystemRole = roleData.IsSystemRole,
+                    Permissions = modules.Select(module => new ModulePermissionVM
+                    {
+                        ModuleId = module.ModuleId,
+                        ModuleName = module.ModuleName,
+                        ModuleDescription = module.ModuleDescription,
+                        SubModules = module.SubModules.Select(subModule => new SubModulePermissionVM
+                        {
+                            SubModuleId = subModule.SubModuleId,
+                            SubModuleName = subModule.SubModuleName,
+                            SubModuleDescription = subModule.SubModuleDescription,
+                            IsAssigned = roleData.AssignedSubModuleIds.Contains(subModule.SubModuleId)
+                        }).ToList(),
+
+                        Enabled = module.SubModules.Any(sm => roleData.AssignedSubModuleIds.Contains(sm.SubModuleId))
+
+                    }).ToList()
+                };
             }
 
+            return rolePermission;
         }
         public async Task<Role?> GetSingleRole(int roleId)
         {
@@ -128,108 +119,66 @@ namespace Poseidon.Repositories
         }
         public async Task<int> AddRole(Role role)
         {
-            try
-            {
-                _context.Roles.Add(role);
-                await _context.SaveChangesAsync();
-                return role.RoleId;
-            }
-            catch (Exception ex)
-            {
-                return 0;
-            }
+            _context.Roles.Add(role);
+            await _context.SaveChangesAsync();
+            return role.RoleId;
         }
         public async Task<int> UpdateRole(Role role)
         {
-            try
+            var existingRole = await _context.Roles.FindAsync(role.RoleId);
+            if (existingRole != null)
             {
-                var existingRole = await _context.Roles.FindAsync(role.RoleId);
-                if (existingRole != null)
-                {
-                    existingRole.RoleName = role.RoleName;
-                    existingRole.Description = role.Description;
-                    existingRole.RoleType = role.RoleType;
-                    existingRole.UpdatedBy = role.UpdatedBy;
-                    existingRole.UpdatedDate = DateTime.UtcNow;
-                    return await _context.SaveChangesAsync();
-                }
+                existingRole.RoleName = role.RoleName;
+                existingRole.Description = role.Description;
+                existingRole.RoleType = role.RoleType;
+                existingRole.UpdatedBy = role.UpdatedBy;
+                existingRole.UpdatedDate = DateTime.UtcNow;
+                return await _context.SaveChangesAsync();
+            }
 
-                return 0;
-            }
-            catch (Exception ex)
-            {
-                return 0;
-            }
+            return 0;
         }
 
         public async Task AddRolePermissions(SaveRoleRequestVM rolePermissions)
         {
-            try
+            var newPermissions = rolePermissions.SubModuleIds.Select(submodule => new RolePermission
             {
-                var newPermissions = rolePermissions.SubModuleIds.Select(submodule => new RolePermission
-                {
-                    RoleId = rolePermissions.RoleId,
-                    SubModuleId = submodule
-                });
+                RoleId = rolePermissions.RoleId,
+                SubModuleId = submodule
+            });
 
-                if (newPermissions != null)
-                {
-                    await _context.RolePermissions.AddRangeAsync(newPermissions);
-                    await _context.SaveChangesAsync();
-                }
-            }
-            catch (Exception ex)
+            if (newPermissions != null)
             {
-                // Handle exception (e.g., log it)
+                await _context.RolePermissions.AddRangeAsync(newPermissions);
+                await _context.SaveChangesAsync();
             }
         }
 
         public async Task DeleteRolePermission(int roleId)
         {
-            try
-            {
-                await _context.RolePermissions
-                     .Where(rp => rp.RoleId == roleId)
-                     .ExecuteDeleteAsync();
-            }
-            catch (Exception ex)
-            {
-                // Handle exception (e.g., log it)
-            }
+            await _context.RolePermissions
+                      .Where(rp => rp.RoleId == roleId)
+                      .ExecuteDeleteAsync();
         }
 
         public async Task<bool> CheckUserHasPermission(int userId, string permissionCode)
         {
-            try
-            {
-                var hasPermission = await _context.Users
+            var hasPermission = await _context.Users
                     .Where(u => u.UserId == userId)
                     .SelectMany(u => u.Role.RolePermissions)
                     .AnyAsync(rp => rp.SubModule.Code == permissionCode);
-                return hasPermission;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
+            return hasPermission;
         }
 
         public async Task<List<string>> GetUserPermissions(int userId)
         {
-            try
-            {
-                var permissions = await _context.Users
+            var permissions = await _context.Users
                     .Where(u => u.UserId == userId)
                     .SelectMany(u => u.Role.RolePermissions)
                     .Select(rp => rp.SubModule.Code)
                     .Distinct()
                     .ToListAsync();
-                return permissions;
-            }
-            catch (Exception ex)
-            {
-                return new List<string>();
-            }
+            return permissions;
         }
     }
 }

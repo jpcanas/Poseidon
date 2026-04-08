@@ -7,134 +7,173 @@ using Poseidon.Authorization;
 using Poseidon.Configurations;
 using Poseidon.Data;
 using Poseidon.Endpoints;
+using Poseidon.Middlewares;
 using Poseidon.Repositories;
 using Poseidon.Repositories.Interfaces;
 using Poseidon.Services;
 using Poseidon.Services.Interfaces;
 using Resend;
+using Serilog;
 
-var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Error()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
-// Add services to the container.
-builder.Configuration.AddJsonFile("emailtemplates.json", optional: false, reloadOnChange: true);
-
-builder.Services.Configure<AuthSetting>(
-    builder.Configuration.GetSection("Authentication"));
-builder.Services.Configure<InactivitySetting>(
-    builder.Configuration.GetSection("InactivitySetting"));
-builder.Services.Configure<List<EmailTemplateConfig>>(
-    builder.Configuration.GetSection("EmailTemplates"));
-
-//db connection
-builder.Services.AddDbContext<PoseidonDbContext>(options =>
+try
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("PoseidonDb"));
-});
+    var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllersWithViews();
-
-//other services
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IRoleRepository, RoleRepository>();
-
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IEmailService, ResendEmailService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IPermissionService, PermissionService>();
-
-//Email service api
-builder.Services.AddOptions();
-builder.Services.AddHttpClient<ResendClient>();
-builder.Services.Configure<ResendClientOptions>(o =>
-{
-    o.ApiToken = Environment.GetEnvironmentVariable("RESEND_APITOKEN")!;
-});
-builder.Services.AddTransient<IResend, ResendClient>();
-
-var authsetting = builder.Configuration.GetSection("Authentication").Get<AuthSetting>();
-
-//Authentication
-builder.Services.AddAuthentication(authsetting.AuthScheme)
-    .AddCookie(authsetting.AuthScheme, options =>
+    //Logs
+    builder.Host.UseSerilog((context, service, config) =>
     {
-        options.Cookie.Name = authsetting.CookieName;
-        options.LoginPath = "/Auth/Login";
-        options.AccessDeniedPath = "/Redirect/AccessDenied";
+        config
+          .ReadFrom.Configuration(context.Configuration)
+          .ReadFrom.Services(service)
+          .WriteTo.File(
+              path: "logs/log-.txt",
+              rollingInterval: RollingInterval.Day,
+              retainedFileCountLimit: 30
+          );
 
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(authsetting.CookieExpireMinutes);
-        options.SlidingExpiration = authsetting.UseSlidingExpiration;
-
-        options.Cookie.HttpOnly = true;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-        options.Cookie.SameSite = SameSiteMode.Lax;
-
-        options.Events = new CookieAuthenticationEvents
-        {
-            OnRedirectToLogin = context =>
-            {
-                // Prevent redirect on AJAX or API requests
-                if (context.Request.Headers["X-Requested-With"] == "XMLHttpRequest" ||
-                    context.Request.Headers["Accept"].ToString().Contains("application/json"))
-                {
-                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                    return Task.CompletedTask;
-                }
-
-                // Default behavior (normal web request)
-                context.Response.Redirect(context.RedirectUri);
-                return Task.CompletedTask;
-            },
-            OnRedirectToAccessDenied = context =>
-            {
-                // Handle 403 Forbidden - just return status code
-                if (context.Request.Headers["X-Requested-With"] == "XMLHttpRequest" ||
-                    context.Request.Headers["Accept"].ToString().Contains("application/json"))
-                {
-                    context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                    return Task.CompletedTask;  // ? Just return 403, no JSON body
-                }
-                context.Response.Redirect(context.RedirectUri);
-                return Task.CompletedTask;
-            }
-        };
-
+        //if (!context.HostingEnvironment.IsDevelopment())
+        //{
+        //    config.WriteTo.Seq(
+        //        context.Configuration["Seq:ServerUrl"]!,
+        //        apiKey: Environment.GetEnvironmentVariable("SEQ_APIKEY")
+        //    );
+        //}
     });
 
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddPermissionAuthorization(); //permission-based authorization
-//builder.Services.AddAuthorization();
+    // Add services to the container.
+    builder.Configuration.AddJsonFile("emailtemplates.json", optional: false, reloadOnChange: true);
 
-var app = builder.Build();
+    builder.Services.Configure<AuthSetting>(
+        builder.Configuration.GetSection("Authentication"));
+    builder.Services.Configure<InactivitySetting>(
+        builder.Configuration.GetSection("InactivitySetting"));
+    builder.Services.Configure<List<EmailTemplateConfig>>(
+        builder.Configuration.GetSection("EmailTemplates"));
 
-app.UseStaticFiles(new StaticFileOptions
-{
-    OnPrepareResponse = context =>
+    //db connection
+    builder.Services.AddDbContext<PoseidonDbContext>(options =>
     {
-        context.Context.Response.Headers.Append("Cache-Control", "public,max-age=600");
-        context.Context.Response.Headers.Append("Expires", DateTime.UtcNow.AddMinutes(10).ToString());
+        options.UseNpgsql(builder.Configuration.GetConnectionString("PoseidonDb"));
+    });
+
+    builder.Services.AddControllersWithViews();
+
+    //other services
+    builder.Services.AddScoped<IUserRepository, UserRepository>();
+    builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+
+    builder.Services.AddScoped<IAuthService, AuthService>();
+    builder.Services.AddScoped<IEmailService, ResendEmailService>();
+    builder.Services.AddScoped<IUserService, UserService>();
+    builder.Services.AddScoped<IPermissionService, PermissionService>();
+
+    //Email service api
+    builder.Services.AddOptions();
+    builder.Services.AddHttpClient<ResendClient>();
+    builder.Services.Configure<ResendClientOptions>(o =>
+    {
+        o.ApiToken = Environment.GetEnvironmentVariable("RESEND_APITOKEN")!;
+    });
+    builder.Services.AddTransient<IResend, ResendClient>();
+
+    var authsetting = builder.Configuration.GetSection("Authentication").Get<AuthSetting>();
+
+    //Authentication
+    builder.Services.AddAuthentication(authsetting.AuthScheme)
+        .AddCookie(authsetting.AuthScheme, options =>
+        {
+            options.Cookie.Name = authsetting.CookieName;
+            options.LoginPath = "/Auth/Login";
+            options.AccessDeniedPath = "/Redirect/AccessDenied";
+
+            options.ExpireTimeSpan = TimeSpan.FromMinutes(authsetting.CookieExpireMinutes);
+            options.SlidingExpiration = authsetting.UseSlidingExpiration;
+
+            options.Cookie.HttpOnly = true;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest; //CookieSecurePolicy.Always; for https
+            options.Cookie.SameSite = SameSiteMode.Lax;
+
+            options.Events = new CookieAuthenticationEvents
+            {
+                OnRedirectToLogin = context =>
+                {
+                    // Prevent redirect on AJAX or API requests
+                    if (context.Request.Headers["X-Requested-With"] == "XMLHttpRequest" ||
+                        context.Request.Headers["Accept"].ToString().Contains("application/json"))
+                    {
+                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        return Task.CompletedTask;
+                    }
+
+                    // Default behavior (normal web request)
+                    context.Response.Redirect(context.RedirectUri);
+                    return Task.CompletedTask;
+                },
+                OnRedirectToAccessDenied = context =>
+                {
+                    // Handle 403 Forbidden - just return status code
+                    if (context.Request.Headers["X-Requested-With"] == "XMLHttpRequest" ||
+                        context.Request.Headers["Accept"].ToString().Contains("application/json"))
+                    {
+                        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                        return Task.CompletedTask;  // ? Just return 403, no JSON body
+                    }
+                    context.Response.Redirect(context.RedirectUri);
+                    return Task.CompletedTask;
+                }
+            };
+
+        });
+
+    builder.Services.AddHttpContextAccessor();
+    builder.Services.AddPermissionAuthorization(); //permission-based authorization
+                                                   //builder.Services.AddAuthorization();
+
+    var app = builder.Build();
+
+    app.UsePathBase(app.Configuration.GetValue<string>("PathBase") ?? string.Empty);
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        OnPrepareResponse = context =>
+        {
+            context.Context.Response.Headers.Append("Cache-Control", "public,max-age=600");
+            context.Context.Response.Headers.Append("Expires", DateTime.UtcNow.AddMinutes(10).ToString());
+        }
+    });
+
+    // Configure the HTTP request pipeline.
+    if (!app.Environment.IsDevelopment())
+    {
+        //app.UseExceptionHandler("/Home/Error"); //already have ExceptionMiddleware
+        // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+        app.UseHsts();
     }
-});
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+
+    app.UseHttpsRedirection();
+    app.UseMiddleware<ExceptionMiddleware>(); //custom exception middleware to handle exceptions globally 
+    app.UseRouting();
+    app.MapStaticAssets();
+
+    //app.MapControllerRoute(
+    //    name: "default",
+    //    pattern: "{controller=Home}/{action=Index}/{id?}")
+    //    .WithStaticAssets();
+    app.UseAuthentication();
+    app.UseAuthorization();
+    app.MapDefaultControllerRoute();
+    app.Run();
+
 }
-
-app.UseHttpsRedirection();
-app.UseRouting();
-app.MapStaticAssets();
-
-//app.MapControllerRoute(
-//    name: "default",
-//    pattern: "{controller=Home}/{action=Index}/{id?}")
-//    .WithStaticAssets();
-
-app.UseAuthentication();
-
-app.UseAuthorization();
-
-app.MapDefaultControllerRoute();
-
-app.Run();
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application failed to start");
+}
+finally
+{
+    Log.CloseAndFlush();
+}

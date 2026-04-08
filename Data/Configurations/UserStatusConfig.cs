@@ -18,7 +18,7 @@ namespace Poseidon.Data.Configurations
                 {
                     UserStatusId = 1,
                     Name = "Active",
-                    Color = "",
+                    Color = "green",
                     IsActive = true,
                     AffectsAccess = false,
                     Description = "Default status for active users",
@@ -30,7 +30,7 @@ namespace Poseidon.Data.Configurations
                 {
                     UserStatusId = 2,
                     Name = "Inactive",
-                    Color = "",
+                    Color = "red",
                     IsActive = true,
                     AffectsAccess = false,
                     Description = "Default status for inactive users",

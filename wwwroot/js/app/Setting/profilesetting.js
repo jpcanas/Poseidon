@@ -47,6 +47,10 @@ document.addEventListener('alpine:init', function () {
             if (result.success) {
                 this.initializedForm(result)
                 dateBirth.setDate(result.user.birthDateInput)
+                const statusBadgeClass = userStatusColorMap[result.user.statusColor] || userStatusColorMap['gray'];
+                const statusPill = document.querySelector('#statusPill');
+                statusPill.className = `badge badge-lg ${statusBadgeClass.text} ${statusBadgeClass.bg} mb-1 border-none font-semibold`;
+                statusPill.textContent = serverData.status;
             }
         },
 

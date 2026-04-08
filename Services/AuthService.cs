@@ -126,7 +126,8 @@ namespace Poseidon.Services
                     RoleId = userEntity.Role.RoleId,
                     RoleName = userEntity.Role.RoleName,
                     UserStatusId = userEntity.UserStatusId,
-                    StatusName = userEntity.UserStatus.Name
+                    StatusName = userEntity.UserStatus.Name,
+                    StatusColor = userEntity.UserStatus.Color,
                 };
             }
             return userVM;

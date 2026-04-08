@@ -1,5 +1,5 @@
 ﻿
-<section class="space-y-4">
+<section class="space-y-4" x-data="userForm">
     <div class="card p-6 bg-white shadow-xl">
         <div class="py-2 pl-3">
             <h2 class="text-2xl font-bold text-neutral">User Setting</h2>
@@ -8,10 +8,20 @@
         <div class="flex-col px-3 pb-3">
             <div class="my-4 flex justify-between">
                 <div class="flex gap-2 text-lg">
-                    <p class="font-semibold text-gray-500">All Users</p>
-                    <p class="text-neutral font-bold">2</p>
-                </div> 
-                <button class="btn btn-primary btn-sm" onclick="modalAddUser.showModal()" has-permission="UAC_ADD_USER">
+                    @*<p class="font-semibold text-gray-500">All Users</p>*@
+                    <label class="input input-bordered flex items-center gap-2 w-96">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             viewBox="0 0 16 16"
+                             fill="currentColor"
+                             class="h-4 w-4 opacity-70">
+                            <path fill-rule="evenodd"
+                                  d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+                                  clip-rule="evenodd" />
+                        </svg>
+                        <input type="text" class="grow" placeholder="Search User" id="userSearch"/>
+                    </label>
+                </div>
+                <button class="btn btn-primary" x-on:click="openRegisterModal" has-permission="UAC_ADD_USER">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
@@ -21,8 +31,9 @@
             <div id="myGrid" class="" style="height: 620px; width:100%;"></div>
         </div>
     </div>
-
     @await Html.PartialAsync("~/Views/Setting/UserSetting_Components/_RegisterUserModal.cshtml")
+    @await Html.PartialAsync("~/Views/Setting/UserSetting_Components/_ManageUserModal.cshtml")
+
 </section>
 
 

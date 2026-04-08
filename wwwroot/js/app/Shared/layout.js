@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let forcedLogoutTime = parseInt(document.getElementById('forcedLogoutTime').value);
 
     document.getElementById('reloginBtn').addEventListener('click', () => {
-        window.location.href = '/Auth/Login';
+        window.location.href = `${pathBase}/Auth/Login`;
     });
 
     logoutBtn.addEventListener('click', async () => logout());
@@ -48,15 +48,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 async function autoLogout() {
-    const res = await fetch("/Auth/AutoLogout", {
-        method: "POST",
-    })
+    const antiForgToken = document.querySelector('input[name="__RequestVerificationToken"]').value;
 
-    if (res.ok) {
-        modalSessionExpired.showModal();
-    } else {
-        alert("Logout failed. Please try again.");
+    try {
+        const res = await axios.post('/Auth/Logout', null,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    "RequestVerificationToken": antiForgToken
+                }
+            }
+        )
+
+        if (res.status == 200) {
+            modalSessionExpired.showModal();
+        } else {
+            alert("Logout failed. Please try again.");
+        }
+    } catch (err) {
+        console.error("err", err)
     } 
+
 }
 
 
@@ -64,20 +76,21 @@ async function logout() {
     const antiForgToken = document.querySelector('input[name="__RequestVerificationToken"]').value;
 
     try {
-        const res = await fetch("/Auth/Logout", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "RequestVerificationToken": antiForgToken
-            },
-        })
+        const res = await axios.post('/Auth/Logout', null,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    "RequestVerificationToken": antiForgToken
+                }
+            }
+        )
 
-        if (res.ok) {
-            window.location.href = "/Auth/Login";
+        if (res.status == 200) {
+            window.location.href = `${pathBase}/Auth/Login`;
         } else {
             alert("Logout failed. Please try again.");
         }
     } catch (err) {
-        console.error(err)
+        console.error("err", err)
     } 
 }

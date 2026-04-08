@@ -1,9 +1,15 @@
 ﻿// Global variables
 let userTableGridApi;
+let dateBirthEdit;
+let userNameList = [];
+let selectedUserName = '';
 
 document.addEventListener('DOMContentLoaded', async function () {
     var myGrid = document.querySelector("#myGrid");
     await getUserPermissions();
+
+    const dateBirthElem = document.querySelector('#dateBirthEdit');
+    dateBirthEdit = new Datepicker(dateBirthElem, DatePickerOptions());
 
     const myTheme = agGrid.themeQuartz.withParams({
         spacing: 10,
@@ -18,6 +24,11 @@ document.addEventListener('DOMContentLoaded', async function () {
             cellRenderer: UserCellRenderer,
             headerClass: "font-bold text-neutral",
             minWidth: 250,
+            getQuickFilterText: (params) => {
+                const fullName = params.data.fullName || params.data.name || '';
+                const email = params.data.email || '';
+                return `${fullName} ${email}`;
+            },
         },
         {
             headerName: 'Role',
@@ -26,7 +37,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         },
         {
             headerName: 'Sex',
-            field: "biologicalSex",
+            field: "biologicalSexStr",
             maxWidth: 120,
             headerClass: "font-bold text-neutral",
         },
@@ -51,10 +62,9 @@ document.addEventListener('DOMContentLoaded', async function () {
         },
         {
             headerName: 'Status',
-            field: "status",
+            cellRenderer: StatusBadge,
             headerClass: "font-bold text-neutral",
             maxWidth: 160,
-            filter: true,
         },
         {
             headerName: 'Address',
@@ -96,7 +106,14 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         eButton.textContent = "Manage"
         eButton.appendChild(svg)
-        this.eventListener = () => console.log('params', params);
+        this.eventListener = () => {
+            if (params && params.data) {
+                var rowData = params.data;
+                populateUserModal(rowData)
+            } else {
+                console.error("Failed to load user data");
+            }
+        };
         eButton.addEventListener('click', this.eventListener);
 
         return eButton;
@@ -130,6 +147,16 @@ document.addEventListener('DOMContentLoaded', async function () {
           `;
     }
 
+    function StatusBadge(params) {
+        const statusData = params.value || params.data;
+        const statusBadge = userStatusColorMap[statusData.statusColor] || userStatusColorMap['gray'];
+        return `
+            <div class="badge ${statusBadge.text} ${statusBadge.bg} border-none font-semibold">
+            ${statusData.status}
+            </div>
+            `
+    }
+
     const gridOptions = {
         defaultColDef: {
             flex: 1,
@@ -153,31 +180,108 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     loadUserData();
 
+    document.getElementById('userSearch').addEventListener('input', (e) => {
+        userTableGridApi.setGridOption('quickFilterText', e.target.value);
+    });
 });
 
 function loadUserData() {
     axios.get("/Setting/Users")
         .then((res) => {
+            let userList = res.data || [];
+            if (res.data) {
+                userNameList = userList.map(u => u.userName.toLowerCase());
+            }
             return userTableGridApi.setGridOption("rowData", res.data)
         })
         .catch(function (error) {
             console.error(error);
         });
 }
+function populateUserModal(serverData) {
+    document.getElementById('modalManageUser').showModal();
+    const statusBadgeClass = userStatusColorMap[serverData.statusColor] || userStatusColorMap['gray'];
 
+    try {
+        const userDataElement = document.querySelector('[x-data="userForm"]');
+        const userAlpinedata = Alpine.$data(userDataElement);
+        const statusPill = document.querySelector('#statusPill');
+        statusPill.className = `badge badge-lg ${statusBadgeClass.text} ${statusBadgeClass.bg} border-none font-semibold mb-1`;
+        statusPill.textContent = serverData.status;
+
+        console.log("serverData", serverData);
+        if (serverData && userAlpinedata) {
+            selectedUserName = serverData.userName;
+            userAlpinedata.userId = serverData.userId;
+            userAlpinedata.email = serverData.email;
+            userAlpinedata.userName = serverData.userName;
+            userAlpinedata.fullName = serverData.fullName;
+            userAlpinedata.address = serverData.address;
+            userAlpinedata.firstName = serverData.firstName;
+            userAlpinedata.middleName = serverData.middleName;
+            userAlpinedata.lastName = serverData.lastName;
+            userAlpinedata.selectSex = serverData.biologicalSex;
+            userAlpinedata.mobileNumber = serverData.mobileNumber; 
+            userAlpinedata.selectRole = serverData.roleId; 
+            userAlpinedata.selectStatus = serverData.userStatusId; 
+            dateBirthEdit.setDate(serverData.birthDateInput);
+            userAlpinedata.birthdateEdit = dateBirthEdit; 
+        }
+
+    } catch (ex) {
+        console.error("selected user modal failed to load", ex);
+    }
+}
+
+function closeManageUserModal() {
+    try {
+        const userDataElement = document.querySelector('[x-data="userForm"]');
+        const userAlpinedata = Alpine.$data(userDataElement);
+        userAlpinedata.userId = 0;
+        userAlpinedata.email = '';
+        userAlpinedata.userName = '';
+        userAlpinedata.fullName = '';
+        userAlpinedata.address = '';
+        userAlpinedata.firstName = '';
+        userAlpinedata.middleName = '';
+        userAlpinedata.lastName = '';
+        userAlpinedata.selectSex = '';
+        userAlpinedata.mobileNumber = '';
+        userAlpinedata.selectRole = '';
+        userAlpinedata.selectStatus = ''; 
+        userAlpinedata.birthdateEdit = null;
+        dateBirthEdit.setDate(null);
+        userAlpinedata.userNameError = ''; 
+        userAlpinedata.firstNameError = ''; 
+        userAlpinedata.lastNameError = ''; 
+        userAlpinedata.selectSexError = ''; 
+        userAlpinedata.selectRoleError = ''; 
+        userAlpinedata.selectStatusError = ''; 
+
+    } catch (ex) {
+        console.error("manage user modal failed to close", ex);
+    } finally {
+        document.getElementById('modalManageUser').close();
+    }
+}
 
 document.addEventListener('alpine:init', () => {
 
     Alpine.data('userForm', () => ({
+        userId: 0,
         email: '',
         userName: '',
         firstName: '',
+        middleName: '',
         lastName: '',
         selectSex: '',
-        birthDate: null,
+        birthdate: '' || null,
+        birthdateEdit: '' || null,
+        mobileNumber: '',
         address: '',
         selectRole: '',
         selectStatus: '',
+        fullName: '',
         emailError: '',
         userNameError: '',
         firstNameError: '',
@@ -226,7 +330,7 @@ document.addEventListener('alpine:init', () => {
 
                 case "role":
                     this.selectRoleError = '';
-                    if (!this.selectRole.trim()) {
+                    if (!this.selectRole) {
                         this.selectRoleError = 'Role is required';
                         return false;
                     };
@@ -234,7 +338,7 @@ document.addEventListener('alpine:init', () => {
 
                 case "status":
                     this.selectStatusError = '';
-                    if (!this.selectStatus.trim()) {
+                    if (!this.selectStatus) {
                         this.selectStatusError = 'Status is required';
                         return false;
                     };
@@ -242,7 +346,7 @@ document.addEventListener('alpine:init', () => {
 
                 case "sex":
                     this.selectSexError = '';
-                    if (!this.selectSex.trim()) {
+                    if (!this.selectSex) {
                         this.selectSexError = 'Biological Sex is required';
                         return false;
                     };
@@ -254,8 +358,13 @@ document.addEventListener('alpine:init', () => {
 
         },
 
-        validateAll() {
-            const inputFields = ['email', 'firstName', 'lastName', 'role', 'status', 'sex']
+        openRegisterModal() {
+            this.resetForm();
+            document.getElementById('modalAddUser').showModal();
+        },
+
+        validateAll(inputFields) {
+           
             let invalidCount = 0;
             for (const input of inputFields) {
                 let isValid = this.validateNewUser(input);
@@ -267,6 +376,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         resetForm() {
+            userId = 0,
             email = '',
                 userName = '',
                 firstName = '',
@@ -288,8 +398,8 @@ document.addEventListener('alpine:init', () => {
         },
 
         async submitUser() {
-
-            if (!this.validateAll()) {
+            const inputFields = ['email', 'firstName', 'lastName', 'role', 'status', 'sex']
+            if (!this.validateAll(inputFields)) {
                 return
             }
 
@@ -324,9 +434,57 @@ document.addEventListener('alpine:init', () => {
                     this.userNameError = result.message.username;
                 }
             }
+        },
+        async updateUser() {
+            const inputFields = ['firstName', 'lastName', 'role', 'status', 'sex']
+            if (!this.validateAll(inputFields)) {
+                return
+            }
 
-        }
+            if (userNameList.includes(this.userName.toLowerCase())
+                && this.userName.toLowerCase() != selectedUserName.toLowerCase()) {
+                this.userNameError = 'Username name already exists';
+                return;
+            }
 
+            const editUser = {
+                UserId: this.userId,
+                Email: this.email,
+                UserName: this.userName,
+                FirstName: this.firstName,
+                MiddleName: this.middleName,
+                LastName: this.lastName,
+                RoleId: parseInt(this.selectRole),
+                UserStatusId: parseInt(this.selectStatus),
+                BiologicalSex: parseInt(this.selectSex),
+                BirthDate: this.birthdateEdit.getDate("yyyy-mm-dd"),
+                MobileNumber: this.mobileNumber,
+                Address: this.address,
+            }
+
+            this.loading = true;
+            var res = await updateUser(editUser);
+            if (res.success) {
+                loadUserData();
+                showToastify('success', res.message.general);
+                document.getElementById('modalConfirmManageUser').close();
+                document.getElementById('modalManageUser').close();
+
+            } else {
+
+                if (res.message.general) {
+                    showToastify('error', res.message.general)
+                } else if (res.message.username) {
+                    this.userNameError = res.message.username;
+                    showToastify('error', res.message.username)
+                } else {
+                    showToastify('error', "Update Failed. Request cannot be processed this time")
+                }
+            }
+
+            this.loading = false;
+        },
+        
     }));
 
 });
@@ -360,6 +518,32 @@ async function registerUser(newUser) {
             errMsg = { general: "You are not allowed to Add User" }
         }
            
+        return {
+            success: false,
+            message: errMsg
+        };
+    }
+}
+
+async function updateUser(editUser) {
+    const antiForgToken = document.querySelector('input[name="__RequestVerificationToken"]').value;
+    try {
+        const res = await axios.post('/Setting/UpdateUserfromAdmin', editUser,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    "RequestVerificationToken": antiForgToken
+                }
+            }
+        )
+        return {
+            success: res.data.success,
+            message: res.data.message
+        }
+    } catch (error) {
+        let errMsg = 'An error occurred while updating the user. Please try again later.';
+        if (error.response?.data?.message)
+            errMsg = error.response.data.message;
         return {
             success: false,
             message: errMsg

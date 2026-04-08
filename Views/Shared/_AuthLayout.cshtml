@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="path-base" content="@Context.Request.PathBase" />
     <title>@ViewData["Title"] - Poseidon</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -36,6 +37,10 @@
     @*  ---- Packages --- *@
     <script src="~/js/lib/alphinejs/cdn.min.js" asp-append-version="true" defer></script>
     <script src="~/js/lib/axios/axios.min.js" asp-append-version="true"></script>
+
+    @*  ---- Shared --- *@
+    <script src="~/js/app/site.js" asp-append-version="true"></script>
+
 
     <script src="~/js/app/Auth/login.js" asp-append-version="true"></script>
 

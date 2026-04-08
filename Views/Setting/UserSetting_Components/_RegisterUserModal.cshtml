@@ -2,7 +2,7 @@
 
 <dialog id="modalAddUser" class="modal">
     @Html.AntiForgeryToken()
-    <div class="modal-box w-11/12 max-w-4xl p-8" x-data="userForm">
+    <div class="modal-box w-11/12 max-w-4xl p-8">
         <div class="flex justify-between items-center">
             <h3 class="text-2xl font-bold">Register User</h3>
             <form method="dialog">
@@ -67,7 +67,7 @@
                     </div>
                     <div class="w-full">
                         <div class="label pt-0">
-                            <span class="label-text">Biological Sex <span class="text-error">*</span></span>
+                            <span class="label-text">Sex <span class="text-error">*</span></span>
                         </div>
                         <select class="select select-bordered w-full focus:outline-none focus:border-primary"
                                 :class="selectSexError == '' ? '' : 'select-error focus:outline-none focus:border-error' "

@@ -36,12 +36,12 @@
                     <h2 class="text-2xl font-semibold text-neutral" x-text="`${firstnameDisplay} ${lastnameDisplay}`"></h2>
                     <p class="text-sm text-gray-500" x-text="rolenameDisplay"></p>
                 </div>
-                <div class="badge badge-lg text-green-700 bg-green-100 mb-1 border-none font-semibold" x-text="statusDisplay"></div>
+                <div x-text="statusDisplay" id="statusPill"></div>
             </div>
         </div>
     </div>
 
-    <div class="card bg-white shadow-sm rounded-lg">
+    <div class="card bg-white shadow rounded-lg">
         <div class="card-body p-0">
 
             <div role="tablist" class="tabs tabs-bordered p-6">

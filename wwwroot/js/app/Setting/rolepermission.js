@@ -79,6 +79,10 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     loadRolesPermission();
 
+    document.getElementById('roleSearch').addEventListener('input', (e) => {
+        roleTableGridApi.setGridOption('quickFilterText', e.target.value);
+    });
+
 });
 
 function loadRolesPermission() {

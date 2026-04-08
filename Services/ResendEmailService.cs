@@ -2,6 +2,7 @@
 using Poseidon.Models.Entities;
 using Poseidon.Services.Interfaces;
 using Resend;
+using Serilog;
 
 namespace Poseidon.Services
 {
@@ -34,8 +35,9 @@ namespace Poseidon.Services
             {
                 if (!_emailTemplates.TryGetValue(templateName, out var template))
                 {
-                    // Log exception properly
-                    return false; // Template not found
+                    Log.Error("Email template {TemplateName} was not found. Recipients: {Recipients}", 
+                        templateName, toEmails);
+                    return false; 
                 }
 
                 var resp = await _resend.EmailSendAsync(
@@ -52,13 +54,25 @@ namespace Poseidon.Services
                     }
                 );
 
-                return resp != null;
+                var success = resp != null;
+
+                if (success)
+                {
+                    Log.Information("Email sent successfully. Template: {TemplateName}, Recipients: {Recipients}",
+                        templateName, toEmails);
+                }else
+                {
+                    Log.Warning("Email send returned null response. Template: {TemplateName}, Recipients: {Recipients}",
+                       templateName, toEmails);
+                }
+                   
+                return success;
             }
             catch (Exception ex)
             {
-                // Log exception properly
+                Log.Error(ex, "Email sending failed. Template: {TemplateName}, Recipients: {Recipients}",
+                     templateName, toEmails);
                 return false;
-
             }
         }
     }
