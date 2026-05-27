@@ -37,5 +37,6 @@ namespace Poseidon.Models.ViewModels
         public string? Status { get; set; }
         public string? RoleName { get; set; }
         public string? StatusColor { get; set; }
+        public int? ProfilePictureFileRecordId { get; set; }
     }
 }

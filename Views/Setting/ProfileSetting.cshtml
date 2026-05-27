@@ -6,7 +6,6 @@
 <script>
     window.userProfileData = @Html.Raw(Json.Serialize(Model));
 </script>
-
 <div class="space-y-4" x-data="profileData">
     @Html.AntiForgeryToken()
     <h1 class="text-2xl font-bold text-gray-900">Profile Settings</h1>
@@ -23,9 +22,17 @@
             <div class="flex flex-col sm:flex-row items-start sm:items-end gap-4">
                 <div class="avatar relative">
                     <div class="w-24 rounded-lg ring ring-white ring-4 bg-white">
-                        <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" alt="Profile" />
+                        @if (Model.ProfilePictureFileRecordId != null)
+                        {
+                            <img src="/Setting/GetProfilePicture/@Model.ProfilePictureFileRecordId" alt="Profile" id="profileImg"/>
+                        }
+                        else
+                        {
+                            <img src="/placeholders/avatar_placeholder.png" alt="Profile" id="profileImg"/>
+                        }
+
                     </div>
-                    <button class="absolute -bottom-1 -right-1 btn btn-circle btn-sm bg-primary border-none">
+                    <button class="absolute -bottom-1 -right-1 btn btn-circle btn-sm bg-primary border-none" onclick="replaceProfilePicModal.showModal()">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -54,6 +61,59 @@
             </div>
         </div>
     </div>
+
+    
+
+    <dialog id="replaceProfilePicModal" class="modal">
+        <div class="modal-box w-11/12 max-w-4xl p-8">
+            <div class="flex justify-between items-center">
+                <h3 class="text-2xl font-bold">Replace Profile Picture</h3>
+                <form method="dialog">
+                    <button class="btn btn-sm btn-circle btn-ghost absolute right-5 top-5">✕</button>
+                </form>
+            </div>
+            <div class="my-4">
+                <input type="file" class="file-input file-input-bordered w-full" onchange="previewProfileImage(event)" />
+                <div id="imagePreviewContainer" class="hidden flex justify-center mt-4" style="max-height: 400px; overflow: hidden;">
+                    <img id="profileImgPreview"
+                         alt="Preview"
+                         class=""
+                         style="max-width: 100%; display: block;" />
+
+                </div>
+            </div>
+            <div class="modal-action">
+                <form method="dialog" class="flex gap-3">
+                    <button class="btn">Close</button>
+                </form>
+                <button class="btn btn-primary" type="button" onclick="modalConfirmReplace.showModal()">
+                    Upload
+                </button>
+            </div>
+        </div>
+    </dialog>
+
+    <dialog id="modalConfirmReplace" class="modal">
+        <div class="modal-box w-11/12 max-w-xl">
+            <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+            </form>
+
+            <h3 class="text-lg font-bold">Save Changes?</h3>
+            <p class="py-4" id="txtConfirmMsg">Do you want to replace your profile pic?</p>
+            <div class="modal-action">
+                <form method="dialog">
+                    <button class="btn">Close</button>
+                </form>
+                <button class="btn btn-primary px-6" id="btnReplaceProfilePic" onclick="uploadProfilePicture()">
+                    Submit
+                    @*<span :class="loading ? 'loading loading-spinner' : '' "></span>
+                        <span x-text="loading ? 'loading' : 'Submit' "></span>*@
+                </button>
+            </div>
+        </div>
+    </dialog>
+
 </div>
 
 @section Scripts {

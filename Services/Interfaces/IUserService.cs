@@ -14,5 +14,6 @@ namespace Poseidon.Services.Interfaces
         Task<int> SaveRolePermissions(SaveRoleRequestVM request);
         Task<UserVM> UpdateUserData(UserVM userModel);
         Task<int> UpdateUserDatabyAdmin(UserVM userModel);
+        Task<int> UpdateUserProfilePictureId(int userId, int fileRecordId);
     }
 }

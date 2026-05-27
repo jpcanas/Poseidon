@@ -39,7 +39,8 @@ namespace Poseidon.Services
                 UserStatusId = u.UserStatusId,
                 Status = u.UserStatus?.Name,
                 MobileNumber = u.MobileNumber,
-                StatusColor = u.UserStatus?.Color
+                StatusColor = u.UserStatus?.Color,
+                ProfilePictureFileRecordId = u.ProfilePictureFileRecordId,
             }).ToList();
 
             return userList;
@@ -140,6 +141,10 @@ namespace Poseidon.Services
         public async Task<int> UpdateUserDatabyAdmin(UserVM userModel)
         {
             return await _userRepository.UpdateUserDatabyAdmin(userModel);
+        }
+        public async Task<int> UpdateUserProfilePictureId(int userId, int fileRecordId)
+        {
+            return await _userRepository.UpdateUserProfilePicId(userId, fileRecordId);
         }
     }
 }

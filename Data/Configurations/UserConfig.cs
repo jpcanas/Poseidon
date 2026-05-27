@@ -60,7 +60,12 @@ namespace Poseidon.Data.Configurations
 
             builder           
             .Property(u => u.BirthDate)       
-            .HasColumnType("date");           
+            .HasColumnType("date");    
+            
+            builder.HasOne(u => u.ProfilePicture)
+                .WithMany()
+                .HasForeignKey(u => u.ProfilePictureFileRecordId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

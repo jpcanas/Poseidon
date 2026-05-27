@@ -123,13 +123,14 @@ document.addEventListener('DOMContentLoaded', async function () {
         const userData = params.value || params.data;
         const fullName = userData.fullName || userData.name || 'N/A';
         const email = userData.email || '';
-        const avatarUrl = userData.avatarUrl || userData.avatar || ''; 
+        const avatarId = userData.profilePictureFileRecordId; 
+        const avatarUrl = avatarId != null ? `/Setting/GetProfilePicture/${avatarId}` : null;
 
         return `
             <div class="flex items-center gap-3 h-full">
-            ${avatarUrl ?
+            ${avatarId ?
                 `<div class="avatar">
-                    <div class="w-10">
+                    <div class="w-10 rounded-full">
                         <img src="${avatarUrl}" alt="${fullName}" />
                      </div>
                   </div>` 
@@ -209,7 +210,13 @@ function populateUserModal(serverData) {
         statusPill.className = `badge badge-lg ${statusBadgeClass.text} ${statusBadgeClass.bg} border-none font-semibold mb-1`;
         statusPill.textContent = serverData.status;
 
-        console.log("serverData", serverData);
+        const profileImg = document.querySelector('#profilePicImg');
+        if (serverData.profilePictureFileRecordId != null) {
+            profileImg.src = `/Setting/GetProfilePicture/${serverData.profilePictureFileRecordId}`;
+        } else {
+            profileImg.src = "/placeholders/avatar_placeholder.png";
+        }     
+
         if (serverData && userAlpinedata) {
             selectedUserName = serverData.userName;
             userAlpinedata.userId = serverData.userId;
@@ -226,6 +233,7 @@ function populateUserModal(serverData) {
             userAlpinedata.selectStatus = serverData.userStatusId; 
             dateBirthEdit.setDate(serverData.birthDateInput);
             userAlpinedata.birthdateEdit = dateBirthEdit; 
+            userAlpinedata.profilePicId = serverData.profilePictureFileRecordId;
         }
 
     } catch (ex) {
@@ -282,6 +290,7 @@ document.addEventListener('alpine:init', () => {
         selectRole: '',
         selectStatus: '',
         fullName: '',
+        profilePicId: null,
         emailError: '',
         userNameError: '',
         firstNameError: '',

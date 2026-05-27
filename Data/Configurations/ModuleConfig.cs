@@ -19,6 +19,16 @@ namespace Poseidon.Data.Configurations
                 Name = "User and Access Control",
                 Description = "Manage people and their access levels to ensure secure and compliant usage of the app"
             });
+
+            builder.HasMany(m => m.ModuleDocumentTypes)
+                .WithOne(mdt => mdt.Module)
+                .HasForeignKey(mdt => mdt.ModuleId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasMany(m => m.FileRecords)
+                .WithOne(fr => fr.Module)
+                .HasForeignKey(fr => fr.ModuleId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

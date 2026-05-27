@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let forcedLogoutTime = parseInt(document.getElementById('forcedLogoutTime').value);
 
     document.getElementById('reloginBtn').addEventListener('click', () => {
-        window.location.href = `${pathBase}/Auth/Login`;
+        window.location.href = `${axios.defaults.baseURL}/Auth/Login`;
     });
 
     logoutBtn.addEventListener('click', async () => logout());
@@ -86,7 +86,7 @@ async function logout() {
         )
 
         if (res.status == 200) {
-            window.location.href = `${pathBase}/Auth/Login`;
+            window.location.href = `${axios.defaults.baseURL}/Auth/Login`;
         } else {
             alert("Logout failed. Please try again.");
         }

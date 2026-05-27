@@ -20,6 +20,7 @@ namespace Poseidon.Repositories.Interfaces
         Task<User?> UpdateUserData(UserVM userModel);
         Task<int> UpdateUserDatabyAdmin(UserVM userModel);
         Task<int> UpdateUserPassword(int userId, string newHashedPassword);
+        Task<int> UpdateUserProfilePicId(int userId, int fileRecordId);
         Task<int> UpdateUserRequirePasswordChange(int userId, bool requireChange);
     }
 }

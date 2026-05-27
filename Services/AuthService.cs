@@ -29,6 +29,7 @@ namespace Poseidon.Services
         }
         public CookieClaims SetupClaims(LoginViewModel loginCreds, User loguser)
         {
+            string profilePicId = loguser.ProfilePictureFileRecordId.HasValue ? loguser.ProfilePictureFileRecordId.Value.ToString() : "0";
             var claims = new List<Claim>
             {
                new Claim(ClaimTypes.NameIdentifier, loguser.UserId.ToString()),
@@ -38,6 +39,7 @@ namespace Poseidon.Services
                 new Claim(ClaimTypes.Email, loguser.Email),
                new Claim(ClaimTypes.Role, loguser.Role.RoleName),
                new Claim("RoleId", loguser.Role.RoleId.ToString()),
+               new Claim("ProfilePicFileId", profilePicId),
             };
 
             var identity = new ClaimsIdentity(claims, _authSetting.CookieName);
@@ -128,6 +130,7 @@ namespace Poseidon.Services
                     UserStatusId = userEntity.UserStatusId,
                     StatusName = userEntity.UserStatus.Name,
                     StatusColor = userEntity.UserStatus.Color,
+                    ProfilePictureFileRecordId = userEntity.ProfilePictureFileRecordId,
                 };
             }
             return userVM;

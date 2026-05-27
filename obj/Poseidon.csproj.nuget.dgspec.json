@@ -97,6 +97,10 @@
             "Serilog.Sinks.Seq": {
               "target": "Package",
               "version": "[9.0.0, )"
+            },
+            "SixLabors.ImageSharp": {
+              "target": "Package",
+              "version": "[3.1.12, )"
             }
           },
           "imports": [

@@ -18,12 +18,21 @@ namespace Poseidon.Controllers
         private readonly IUserService _userService;
         private readonly IAuthService _authService;
         private readonly IPermissionService _permissionService;
+        private readonly IStorageService _storageService;
+        private readonly IFileRecordService _fileRecord;
 
-        public SettingController(IUserService userService, IAuthService authService, IPermissionService permissionService)
+        public SettingController(
+            IUserService userService, 
+            IAuthService authService, 
+            IPermissionService permissionService,
+            IStorageService storageService,
+            IFileRecordService fileRecord)
         {
             _userService = userService;
             _authService = authService;
             _permissionService = permissionService;
+            _storageService = storageService;
+            _fileRecord = fileRecord;
         }
 
         #region User Setting
@@ -231,6 +240,49 @@ namespace Poseidon.Controllers
             });
         }
 
+        [Authorize]
+        [HttpPost("Setting/UploadProfilePicture")]
+        public async Task<IActionResult> UploadProfilePicture(IFormFile file, int userId)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (file == null || file.Length == 0)
+                return BadRequest(new { FileKey = string.Empty, Message = "No file uploaded"});
+            
+            var allowedTypes = new[] { "image/jpeg", "image/png", "image/webp" };
+            if (!allowedTypes.Contains(file.ContentType))
+                return BadRequest(new { FileKey = string.Empty, Message = "Only JPEG, PNG and WEBP images are allowed." });
+
+            const long maxSize = 5 * 1024 * 1024; 
+            if (file.Length > maxSize)
+                return BadRequest(new { FileKey = string.Empty, Message = "5MB File must not exceed 5MB." });
+
+            FileRecordVM savedFile = await _storageService.SaveFileAsync(
+                file, 
+                ModuleType.UserAndAccess, 
+                DocumentType.ProfilePicture, 
+                refId: int.Parse(userIdClaim ?? "0"), 
+                uploadedBy: User.FindFirst(ClaimTypes.Email)?.Value ?? string.Empty);
+
+            await _userService.UpdateUserProfilePictureId(userId, savedFile.Id);
+
+            return Ok(new { FileKey = savedFile.FileKey, Message = "Profile picture uploaded successfully", SaveFileId = savedFile.Id });
+        }
+
+        [Authorize]
+        [HttpGet("Setting/GetProfilePicture/{fileRecordId}")]
+        public async Task<IActionResult> GetProfilePicture(int fileRecordId)
+        {
+            var fileRecord = await _fileRecord.GetFileRecordById(fileRecordId);
+            if (fileRecord == null)
+                return NotFound(); 
+
+            var stream = await _storageService.GetFileAsync(fileRecord.ThumbnailKey!);
+            if(stream == null)
+                return NotFound();
+
+            return File(stream, "image/webp");
+        }
         #endregion
 
         #region Roles and Permission

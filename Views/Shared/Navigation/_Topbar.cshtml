@@ -3,6 +3,7 @@
 @{ 
     var firsName = User.FindFirst("FirstName")?.Value;
     var lastName = User.FindFirst("LastName")?.Value;
+    var profilePicFileId = User.FindFirst("ProfilePicFileId")?.Value;
     var roleName = User.FindFirst(ClaimTypes.Role)?.Value;
     var initials = $"{firsName?.FirstOrDefault()}{lastName?.FirstOrDefault()}".ToUpperInvariant();
 }
@@ -41,16 +42,25 @@
             <div class="dropdown dropdown-end">
                 <div tabindex="0" role="button">
                     <button type="button" class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-400 transition">
-                        @*<div class="avatar">
-                            <div class="w-10 rounded-full">
-                                <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                        @if (profilePicFileId != "0")
+                        {
+                            var profilePicId = Convert.ToInt32(profilePicFileId);
+                            <div class="avatar">
+                                <div class="w-10 rounded-full">
+                                    <img src="/Setting/GetProfilePicture/@profilePicId" id="navProfileImg"/>
+                                </div>
                             </div>
-                        </div>*@
-                        <div class="avatar placeholder">
-                            <div class="bg-neutral text-neutral-content w-10 h-10 rounded-full">
-                                <span>@initials</span>
+                        }
+                        else
+                        {
+                            <div class="avatar placeholder">
+                                <div class="bg-neutral text-neutral-content w-10 h-10 rounded-full">
+                                    <span>@initials</span>
+                                </div>
                             </div>
-                        </div>
+                        }
+
+
 
                     </button>
                 </div>

@@ -50,7 +50,7 @@ document.addEventListener('alpine:init', function () {
                 const statusBadgeClass = userStatusColorMap[result.user.statusColor] || userStatusColorMap['gray'];
                 const statusPill = document.querySelector('#statusPill');
                 statusPill.className = `badge badge-lg ${statusBadgeClass.text} ${statusBadgeClass.bg} mb-1 border-none font-semibold`;
-                statusPill.textContent = serverData.status;
+                statusPill.textContent = result.user.statusName;
             }
         },
 
@@ -412,5 +412,82 @@ async function sendResetPasswordEmail(emailInput) {
             status: error.status,
             msg: message,
         }
+    }
+}
+
+function previewProfileImage(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const preview = document.getElementById('profileImgPreview');
+    const container = document.getElementById('imagePreviewContainer');
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        preview.src = e.target.result;
+        container.classList.remove('hidden');
+        //preview.onload = function () {
+        //    new Cropper(preview, {
+        //        aspectRatio: 1,        // square crop
+        //    });
+        //};      
+    }
+        ;   
+    reader.readAsDataURL(file);
+}
+
+async function uploadProfilePicture() {
+    const fileInput = document.querySelector('#replaceProfilePicModal input[type="file"]');
+    const file = fileInput.files[0];
+
+    if (!file) {
+        alert('Please select a file first.');
+        return;
+    }
+
+    const submitBtn = document.querySelector('#btnReplaceProfilePic');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="loading loading-spinner"></span> Uploading...';
+
+    const currentUser = await loadCurrentUserData();
+    let userId = 0, profilePicId = 0;
+    if (currentUser.success) {
+        userId = currentUser.user.userId;   
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('userId', userId);
+
+    try {
+        const response = await axios.post('/Setting/UploadProfilePicture', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+
+        if (response.status == 200) {
+            document.getElementById('modalConfirmReplace').close();
+            document.getElementById('replaceProfilePicModal').close();
+
+            const preview = document.getElementById('profileImgPreview');
+            const container = document.getElementById('imagePreviewContainer');
+            preview.src = '';
+            container.classList.add('hidden');
+
+            const actualProfileImg = document.getElementById('profileImg'); 
+            const navProfileImg = document.getElementById('navProfileImg');
+            actualProfileImg.src = '/Setting/GetProfilePicture/' + response.data.saveFileId + '?t=' + new Date().getTime();
+            navProfileImg.src = '/Setting/GetProfilePicture/' + response.data.saveFileId + '?t=' + new Date().getTime();
+
+            showToastify('success', response.data.message)
+        }
+
+    } catch (error) {
+        const message = error.response?.data?.message ?? 'Something went wrong. Please try again.';
+        showToastify('error', message)
+
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
     }
 }

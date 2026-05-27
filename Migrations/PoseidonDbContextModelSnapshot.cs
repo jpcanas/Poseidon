@@ -22,6 +22,60 @@ namespace Poseidon.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Poseidon.Models.Entities.FileRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("FileKey")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("FileSizeBytes")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("ModuleDocumentTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ModuleId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("OriginalFileName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("ReferenceId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ThumbnailKey")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UploadedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<string>("UploadedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ModuleDocumentTypeId");
+
+                    b.HasIndex("ModuleId", "ReferenceId");
+
+                    b.ToTable("FileRecords");
+                });
+
             modelBuilder.Entity("Poseidon.Models.Entities.Module", b =>
                 {
                     b.Property<int>("Id")
@@ -50,6 +104,43 @@ namespace Poseidon.Migrations
                             Id = 1,
                             Description = "Manage people and their access levels to ensure secure and compliant usage of the app",
                             Name = "User and Access Control"
+                        });
+                });
+
+            modelBuilder.Entity("Poseidon.Models.Entities.ModuleDocumentType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("DocumentTypeName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("ModuleId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ModuleId", "DocumentTypeName")
+                        .IsUnique();
+
+                    b.ToTable("ModuleDocumentTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Profile pictures uploaded by users for their accounts",
+                            DocumentTypeName = "Profile Picture",
+                            ModuleId = 1
                         });
                 });
 
@@ -343,6 +434,9 @@ namespace Poseidon.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int?>("ProfilePictureFileRecordId")
+                        .HasColumnType("integer");
+
                     b.Property<bool>("RequiredPasswordChange")
                         .HasColumnType("boolean");
 
@@ -371,6 +465,8 @@ namespace Poseidon.Migrations
 
                     b.HasIndex("Email")
                         .IsUnique();
+
+                    b.HasIndex("ProfilePictureFileRecordId");
 
                     b.HasIndex("RoleId");
 
@@ -471,6 +567,36 @@ namespace Poseidon.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Poseidon.Models.Entities.FileRecord", b =>
+                {
+                    b.HasOne("Poseidon.Models.Entities.ModuleDocumentType", "ModuleDocumentType")
+                        .WithMany("FileRecords")
+                        .HasForeignKey("ModuleDocumentTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Poseidon.Models.Entities.Module", "Module")
+                        .WithMany("FileRecords")
+                        .HasForeignKey("ModuleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Module");
+
+                    b.Navigation("ModuleDocumentType");
+                });
+
+            modelBuilder.Entity("Poseidon.Models.Entities.ModuleDocumentType", b =>
+                {
+                    b.HasOne("Poseidon.Models.Entities.Module", "Module")
+                        .WithMany("ModuleDocumentTypes")
+                        .HasForeignKey("ModuleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Module");
+                });
+
             modelBuilder.Entity("Poseidon.Models.Entities.PasswordResetToken", b =>
                 {
                     b.HasOne("Poseidon.Models.Entities.User", "User")
@@ -514,6 +640,11 @@ namespace Poseidon.Migrations
 
             modelBuilder.Entity("Poseidon.Models.Entities.User", b =>
                 {
+                    b.HasOne("Poseidon.Models.Entities.FileRecord", "ProfilePicture")
+                        .WithMany()
+                        .HasForeignKey("ProfilePictureFileRecordId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("Poseidon.Models.Entities.Role", "Role")
                         .WithMany("Users")
                         .HasForeignKey("RoleId")
@@ -526,6 +657,8 @@ namespace Poseidon.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("ProfilePicture");
+
                     b.Navigation("Role");
 
                     b.Navigation("UserStatus");
@@ -533,7 +666,16 @@ namespace Poseidon.Migrations
 
             modelBuilder.Entity("Poseidon.Models.Entities.Module", b =>
                 {
+                    b.Navigation("FileRecords");
+
+                    b.Navigation("ModuleDocumentTypes");
+
                     b.Navigation("SubModules");
+                });
+
+            modelBuilder.Entity("Poseidon.Models.Entities.ModuleDocumentType", b =>
+                {
+                    b.Navigation("FileRecords");
                 });
 
             modelBuilder.Entity("Poseidon.Models.Entities.Role", b =>

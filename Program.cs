@@ -66,11 +66,14 @@ try
     //other services
     builder.Services.AddScoped<IUserRepository, UserRepository>();
     builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+    builder.Services.AddScoped<IFileRecordRepository, FileRecordRepository>();
 
     builder.Services.AddScoped<IAuthService, AuthService>();
     builder.Services.AddScoped<IEmailService, ResendEmailService>();
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<IPermissionService, PermissionService>();
+    builder.Services.AddScoped<IStorageService, LocalStorageService>();
+    builder.Services.AddScoped<IFileRecordService, FileRecordService>();
 
     //Email service api
     builder.Services.AddOptions();

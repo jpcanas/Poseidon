@@ -90,7 +90,12 @@
             </div>
         </div>
 
-
+        <form asp-controller="Setting" asp-action="UploadProfilePicture" method="post" enctype="multipart/form-data" class="space-y-4">
+            <input type="file" name="file" class="file-input file-input-bordered w-full max-w-xs" />
+            <button type="submit" class="btn btn-primary">
+                Upload
+            </button>
+        </form>
 
         <p class="text-xl font-thin">Roboto thin 100 — The quick brown fox jumps over the lazy dog</p>
 

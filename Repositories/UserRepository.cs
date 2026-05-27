@@ -205,5 +205,18 @@ namespace Poseidon.Repositories
 
             return 0;
         }
+        public async Task<int> UpdateUserProfilePicId(int userId, int fileRecordId)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user != null)
+            {
+                user.ProfilePictureFileRecordId = fileRecordId;
+                return await _context.SaveChangesAsync();
+            }
+            else
+            {
+                return 0;
+            }
+        }
     }
 }

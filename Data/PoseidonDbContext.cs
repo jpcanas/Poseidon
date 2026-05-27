@@ -17,6 +17,8 @@ namespace Poseidon.Data
         public DbSet<Module> Modules { get; set; }
         public DbSet<SubModule> SubModules { get; set; }
         public DbSet<RolePermission> RolePermissions { get; set; }
+        public DbSet<FileRecord> FileRecords { get; set; }
+        public DbSet<ModuleDocumentType> ModuleDocumentTypes { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

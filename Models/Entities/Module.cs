@@ -13,5 +13,8 @@ namespace Poseidon.Models.Entities
         [MaxLength(1000)]
         public string Description { get; set; } = string.Empty;
         public List<SubModule> SubModules { get; set; } = new();
+        public List<ModuleDocumentType> ModuleDocumentTypes { get; set; } = new();
+        public List<FileRecord> FileRecords { get; set; } = new();
+
     }
 }

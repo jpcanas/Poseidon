@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Poseidon")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bc8032288ed37f6ae78c1ec32acbc7d1d3392f8f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c237517e4439d2c0d8238aa0e7ef6b623a616897")]
 [assembly: System.Reflection.AssemblyProductAttribute("Poseidon")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Poseidon")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

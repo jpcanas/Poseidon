@@ -57,6 +57,8 @@ namespace Poseidon.Models.Entities
 
         [Required]
         public bool RequiredPasswordChange { get; set; }
+        public int? ProfilePictureFileRecordId { get; set; }
+        public FileRecord? ProfilePicture { get; set; }
 
     }
 }
