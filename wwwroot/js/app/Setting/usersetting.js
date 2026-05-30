@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const fullName = userData.fullName || userData.name || 'N/A';
         const email = userData.email || '';
         const avatarId = userData.profilePictureFileRecordId; 
-        const avatarUrl = avatarId != null ? `/Setting/GetProfilePicture/${avatarId}` : null;
+        const avatarUrl = avatarId != null ? `${pathBase}/Setting/GetProfilePicture/${avatarId}` : null;
 
         return `
             <div class="flex items-center gap-3 h-full">
@@ -212,10 +212,10 @@ function populateUserModal(serverData) {
 
         const profileImg = document.querySelector('#profilePicImg');
         if (serverData.profilePictureFileRecordId != null) {
-            profileImg.src = `/Setting/GetProfilePicture/${serverData.profilePictureFileRecordId}`;
+            profileImg.src = `${pathBase}/Setting/GetProfilePicture/${serverData.profilePictureFileRecordId}`;
         } else {
-            profileImg.src = `${pathBase}/placeholders/avatar_placeholder.png`;
-        }     
+            profileImg.src = pathBase + '/placeholders/avatar_placeholder.png';
+        }    
 
         if (serverData && userAlpinedata) {
             selectedUserName = serverData.userName;

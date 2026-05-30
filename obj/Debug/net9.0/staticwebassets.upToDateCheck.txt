@@ -15,6 +15,7 @@ wwwroot\js\app\Auth\login.js
 wwwroot\js\app\Auth\password-component.js
 wwwroot\js\app\Setting\profilesetting.js
 wwwroot\js\app\Setting\rolepermission.js
+wwwroot\js\app\Setting\usersetting.js
 wwwroot\js\app\Shared\layout.js
 wwwroot\js\app\Shared\sidebar.js
 wwwroot\js\app\site.js
@@ -47,7 +48,6 @@ wwwroot\private-uploads\UserAndAccess\ProfilePicture\4\20260507143551_4b8d84ec.p
 wwwroot\private-uploads\UserAndAccess\ProfilePicture\4\20260510144956_ad6faeaf.jpg
 wwwroot\private-uploads\UserAndAccess\ProfilePicture\4\thumbnails\20260507143551_4b8d84ec.webp
 wwwroot\private-uploads\UserAndAccess\ProfilePicture\4\thumbnails\20260510144956_ad6faeaf.webp
-wwwroot\js\app\Setting\usersetting.js
 C:\Repositories\p_projects\Poseidon2\Poseidon\wwwroot\css\air-datepicker\air-datepicker.css
 C:\Repositories\p_projects\Poseidon2\Poseidon\wwwroot\css\app.css
 C:\Repositories\p_projects\Poseidon2\Poseidon\wwwroot\css\site.css
@@ -60,6 +60,7 @@ C:\Repositories\p_projects\Poseidon2\Poseidon\wwwroot\js\app\Auth\login.js
 C:\Repositories\p_projects\Poseidon2\Poseidon\wwwroot\js\app\Auth\password-component.js
 C:\Repositories\p_projects\Poseidon2\Poseidon\wwwroot\js\app\Setting\profilesetting.js
 C:\Repositories\p_projects\Poseidon2\Poseidon\wwwroot\js\app\Setting\rolepermission.js
+C:\Repositories\p_projects\Poseidon2\Poseidon\wwwroot\js\app\Setting\usersetting.js
 C:\Repositories\p_projects\Poseidon2\Poseidon\wwwroot\js\app\Shared\layout.js
 C:\Repositories\p_projects\Poseidon2\Poseidon\wwwroot\js\app\Shared\sidebar.js
 C:\Repositories\p_projects\Poseidon2\Poseidon\wwwroot\js\app\site.js
@@ -73,4 +74,3 @@ C:\Repositories\p_projects\Poseidon2\Poseidon\wwwroot\js\lib\cropper\cropper.min
 C:\Repositories\p_projects\Poseidon2\Poseidon\wwwroot\js\lib\toastify\toastify.js
 C:\Repositories\p_projects\Poseidon2\Poseidon\wwwroot\js\lib\tom-select\tom-select.complete.min.js
 C:\Repositories\p_projects\Poseidon2\Poseidon\wwwroot\js\lib\vanillajs-datepicker\datepicker.min.js
-C:\Repositories\p_projects\Poseidon2\Poseidon\wwwroot\js\app\Setting\usersetting.js

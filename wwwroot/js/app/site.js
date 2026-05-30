@@ -2,7 +2,7 @@
 let userPermissions = [];
 const base = document.querySelector('meta[name="path-base"]')?.content ?? '';
 axios.defaults.baseURL = base;
-const pathBase = base ? `/${base}` : '';
+const pathBase = base ?? ''; //`/${base}`
 
 function DatePickerOptions() {
     return {

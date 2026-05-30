@@ -476,8 +476,8 @@ async function uploadProfilePicture() {
 
             const actualProfileImg = document.getElementById('profileImg'); 
             const navProfileImg = document.getElementById('navProfileImg');
-            actualProfileImg.src = '/Setting/GetProfilePicture/' + response.data.saveFileId + '?t=' + new Date().getTime();
-            navProfileImg.src = '/Setting/GetProfilePicture/' + response.data.saveFileId + '?t=' + new Date().getTime();
+            actualProfileImg.src = pathBase + '/Setting/GetProfilePicture/' + response.data.saveFileId + '?t=' + new Date().getTime();
+            navProfileImg.src = pathBase + '/Setting/GetProfilePicture/' + response.data.saveFileId + '?t=' + new Date().getTime();
 
             showToastify('success', response.data.message)
         }
