@@ -214,7 +214,7 @@ function populateUserModal(serverData) {
         if (serverData.profilePictureFileRecordId != null) {
             profileImg.src = `/Setting/GetProfilePicture/${serverData.profilePictureFileRecordId}`;
         } else {
-            profileImg.src = "/placeholders/avatar_placeholder.png";
+            profileImg.src = `${pathBase}/placeholders/avatar_placeholder.png`;
         }     
 
         if (serverData && userAlpinedata) {
